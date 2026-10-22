@@ -1,35 +1,40 @@
 # mouse-clic-game
-Jeu pour s'entraîner au maniement de la souris, pensé pour les personnes qui débutent avec l'ordinateur.
+Jeu pour s'entraîner au maniement de la souris, pensé pour les personnes qui débutent avec l'ordinateur et qui jouent seules.
 
 Même charte graphique que [OCN-mouse-campus](https://github.com/le-campus-numerique/OCN-mouse-campus) : fond gris clair, cases blanches, icônes au trait, vert pour la réussite et rouge pour l'erreur.
 
-## Les ateliers
+## Les ateliers et leurs niveaux
 
-| Atelier | Ce qu'on pratique |
-| --- | --- |
-| Clic gauche | Cliquer sur un fichier avec le bouton gauche |
-| Clic droit | Ouvrir le menu d'un fichier avec le bouton droit |
-| Double-clic | Ouvrir un dossier avec deux clics rapides (800 ms, puis 500 ms comme sous Windows) |
-| Bouton central | Appuyer sur la molette comme sur un bouton |
-| Molette | Tourner la molette pour monter ou descendre un fichier jusqu'au dossier |
-| Glisser-déposer | Ranger un fichier dans un dossier, puis trier documents et images |
-| Grand défi | Clics gauche, droit et central mélangés |
+| Atelier | Niveau 1 | Niveau 2 | Niveau 3 |
+| --- | --- | --- | --- |
+| Clic gauche | Un grand fichier à cliquer | Cases plus petites, icônes leurres | Cliquer avant que le fichier change de place |
+| Clic droit | Ouvrir le menu du fichier | Ouvrir le menu, puis choisir l'action demandée | Trouver le bon fichier par son nom, puis choisir l'action |
+| Double-clic | Deux clics en moins de 0,8 s | Deux clics en moins de 0,5 s (comme sous Windows) | Trouver le bon dossier par son nom et l'ouvrir |
+| Bouton central | Appuyer sur la molette | Cases plus petites, icônes leurres | Ouvrir des liens dans un nouvel onglet |
+| Molette | Déplacer le fichier cran par cran | Faire défiler une liste pour trouver le dossier | Trouver un fichier par son nom dans une longue liste |
+| Glisser-déposer | Ranger le fichier dans le dossier | Trier dans trois dossiers | Le labyrinthe de OCN-mouse-campus |
+| Grand défi | Clics gauche, droit et central mélangés | Cases plus petites, icônes leurres | Contre la montre |
 
-À chaque consigne, un dessin de souris montre en vert le bouton à utiliser. Chaque atelier se joue en 10 manches (15 pour le Grand défi). On gagne de 1 à 3 étoiles selon le nombre d'erreurs. Les étoiles sont gardées dans le navigateur.
+À chaque consigne, un dessin de souris montre en vert le bouton à utiliser. On gagne de 1 à 3 étoiles selon le nombre d'erreurs. Avec ★★ ou plus, le niveau suivant se débloque. Les étoiles sont gardées dans le navigateur.
 
-Pas de compte à rebours : le temps est seulement affiché, pour ne pas mettre de pression.
+Seul le niveau 3 du clic gauche et du Grand défi est minuté. Ailleurs, le temps est seulement affiché, pour ne pas mettre de pression.
+
+Sans bouton central (pavé tactile d'ordinateur portable), le bouton « Je n'ai pas de bouton central » passe l'atelier et retire ce bouton du Grand défi.
 
 ## Lancer le jeu
 
 Ouvrez `index.html` dans un navigateur. Il n'y a rien à installer : c'est du HTML, du CSS et du JavaScript, sans bibliothèque.
 
-Le jeu peut aussi être publié avec GitHub Pages (Settings → Pages → branche `main`).
+En ligne avec GitHub Pages : https://fievel20.github.io/mouse-clic-game/
 
-Sans bouton central (pavé tactile d'ordinateur portable), le bouton « Je n'ai pas de bouton central » passe l'atelier et retire ce bouton du Grand défi.
+## Tests automatiques
+
+Ouvrez `index.html?test` : un robot joue chaque niveau de chaque atelier en accéléré, puis vérifie que les erreurs sont bien comptées. Le rapport s'affiche en haut à droite. Ces tests n'effacent pas les vraies étoiles.
 
 ## Organisation du code
 
-- `js/core.js` : menu, déroulement d'une partie, score, étoiles, dessin de la souris.
-- `js/ateliers/*.js` : un fichier par atelier, qui s'enregistre avec `MouseGame.register({ id, title, text, hint, rounds, order, start })`.
+- `js/core.js` : menu, niveaux, déroulement d'une partie, score, étoiles, dessin de la souris.
+- `js/ateliers/*.js` : un fichier par atelier, qui s'enregistre avec `MouseGame.register({ id, order, title, text, hint, levels, start })`. Chaque niveau est un objet de réglages (`{ name, rounds, ... }`) passé à `start(api, level)`.
+- `js/tests.js` : les tests automatiques.
 
-Pour ajouter un atelier : créer son fichier dans `js/ateliers/`, puis l'ajouter dans `index.html`. Les scripts sont classiques, sans modules, pour que `index.html` s'ouvre aussi sans serveur.
+Pour ajouter un atelier : créer son fichier dans `js/ateliers/`, l'ajouter dans `index.html`, puis apprendre au robot de `js/tests.js` à y jouer. Les scripts sont classiques, sans modules, pour que `index.html` s'ouvre aussi sans serveur.

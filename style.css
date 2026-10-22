@@ -51,6 +51,7 @@ h2 {
 
 .cards .card {
     width: 200px;
+    box-sizing: border-box;
 }
 
 .card {
@@ -88,14 +89,49 @@ h2 {
     opacity: 0.6;
 }
 
-.card .stars {
-    font-size: 22px;
-    letter-spacing: 4px;
+/* Boutons de niveau sur chaque carte */
+.levels {
+    display: flex;
+    gap: 6px;
+}
+
+.level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    width: 56px;
+    padding: 4px 0;
+    font-family: inherit;
+    font-size: 12px;
+    color: #333;
+    background-color: #f4f4f9;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.level:hover:not(:disabled) {
+    border-color: #808080;
+}
+
+.level.current {
+    border-color: #4caf50;
+}
+
+.level:disabled {
+    color: #999;
+    cursor: not-allowed;
+}
+
+.level .stars {
+    font-size: 14px;
     color: #c8c8c8;
 }
 
-.card .stars .on {
+.level .stars b {
     color: #f5b301;
+    font-weight: normal;
 }
 
 .link-button {
@@ -147,6 +183,16 @@ h2 {
     margin-bottom: 15px;
 }
 
+.titles {
+    text-align: left;
+}
+
+.level-text {
+    font-size: 16px;
+    color: #808080;
+    margin-top: 2px;
+}
+
 .back-button {
     padding: 8px 16px;
     font-size: 16px;
@@ -195,14 +241,14 @@ h2 {
 /* Grille de cases, comme le labyrinthe d'origine */
 .grid {
     display: grid;
-    grid-template-columns: repeat(var(--cols), 60px);
-    grid-template-rows: repeat(var(--rows), 60px);
+    grid-template-columns: repeat(var(--cols), var(--cell, 60px));
+    grid-template-rows: repeat(var(--rows), var(--cell, 60px));
     gap: 5px;
 }
 
 .cell {
-    width: 60px;
-    height: 60px;
+    width: var(--cell, 60px);
+    height: var(--cell, 60px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -238,6 +284,48 @@ h2 {
     pointer-events: none;
 }
 
+/* Petites cases : icônes réduites */
+.grid.small .icon {
+    width: 32px;
+    height: 32px;
+}
+
+/* Fichiers nommés : icône + nom */
+.grid.named .cell {
+    flex-direction: column;
+    gap: 4px;
+}
+
+.grid.named .icon {
+    width: 34px;
+    height: 34px;
+}
+
+.cell .label {
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.decoy {
+    cursor: pointer;
+}
+
+/* Temps restant pour cliquer */
+.time-bar {
+    height: 8px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.time-bar div {
+    height: 100%;
+    width: 100%;
+    background-color: #4caf50;
+}
+
 .error {
     background-color: #ff4c4c !important;
 }
@@ -261,6 +349,85 @@ h2 {
 
 .context-menu div {
     padding: 6px 16px;
+}
+
+.context-menu.interactive div {
+    cursor: pointer;
+}
+
+.context-menu.interactive div:hover {
+    background-color: #f4f4f9;
+}
+
+.context-menu div.chosen {
+    background-color: #4caf50 !important;
+    color: #fff;
+}
+
+.context-menu div.wrong {
+    background-color: #ff4c4c !important;
+    color: #fff;
+}
+
+/* Faux navigateur (bouton central, niveau 3) */
+.browser {
+    width: 600px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: left;
+}
+
+.tabs {
+    display: flex;
+    gap: 4px;
+    padding: 8px 8px 0;
+    background-color: #dcdce6;
+}
+
+.tab {
+    padding: 8px 14px;
+    font-size: 14px;
+    background-color: #ececf2;
+    border-radius: 5px 5px 0 0;
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tab.active {
+    background-color: #ffffff;
+}
+
+.tab.new {
+    animation: tab-in 0.4s ease-out;
+}
+
+@keyframes tab-in {
+    from { background-color: #4caf50; }
+}
+
+.page {
+    padding: 20px 30px 30px;
+}
+
+.page-title {
+    font-size: 22px;
+    margin-bottom: 16px;
+}
+
+.links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 30px;
+}
+
+.fake-link {
+    font-size: 20px;
+    color: #1a5fb4;
+    text-decoration: underline;
 }
 
 /* Molette : colonne + flèches */
@@ -288,6 +455,38 @@ h2 {
     justify-content: space-between;
     text-align: left;
     padding: 10px 0;
+}
+
+/* Molette : liste à faire défiler */
+.scroll-list {
+    width: 420px;
+    height: 340px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.scroll-list .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 44px;
+    padding: 0 16px;
+    font-size: 18px;
+    border-bottom: 1px solid #f0f0f4;
+    cursor: pointer;
+}
+
+.scroll-list .row:hover {
+    background-color: #f4f4f9;
+}
+
+.scroll-list .icon {
+    width: 28px;
+    height: 28px;
 }
 
 /* Glisser-déposer : plateau libre */
@@ -335,6 +534,49 @@ h2 {
 .piece.folder.hover {
     border-color: #4caf50;
     background-color: #e8f5e9;
+}
+
+/* Labyrinthe (glisser-déposer, niveau 3) */
+.maze-wrap {
+    position: relative;
+}
+
+.grid.maze {
+    gap: 3px;
+}
+
+.grid.maze .icon {
+    width: 26px;
+    height: 26px;
+}
+
+.maze-piece {
+    width: 30px;
+    height: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.maze-piece .icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Rapport des tests automatiques (index.html?test) */
+.test-report {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 20;
+    width: 340px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 12px;
+    font-size: 13px;
+    text-align: left;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* ---------- Fenêtre de résultat ---------- */

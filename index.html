@@ -20,7 +20,10 @@
 <div class="container hidden" id="game">
     <div class="topbar">
         <button class="back-button" id="backButton">← Menu</button>
-        <h2 id="gameTitle"></h2>
+        <div class="titles">
+            <h2 id="gameTitle"></h2>
+            <div class="level-text" id="levelText"></div>
+        </div>
         <button class="back-button hidden" id="skipMiddle">Je n’ai pas de bouton central</button>
     </div>
     <div class="instruction">
@@ -40,6 +43,7 @@
     <div class="modal-content">
         <div class="result-message" id="resultMessage"></div>
         <div class="result-detail" id="resultDetail"></div>
+        <button class="reset-button hidden" id="nextLevelButton">Niveau suivant →</button>
         <button class="reset-button" id="replayButton">Rejouer</button>
         <button class="reset-button secondary" id="menuButton">Retour au menu</button>
     </div>
@@ -51,6 +55,14 @@
 <script src="js/ateliers/double-clic.js"></script>
 <script src="js/ateliers/molette.js"></script>
 <script src="js/ateliers/glisser.js"></script>
-<script>MouseGame.start();</script>
+<script>
+    MouseGame.start();
+    // index.html?test : joue automatiquement tous les niveaux
+    if (MouseGame.isTest) {
+        const tests = document.createElement('script');
+        tests.src = 'js/tests.js';
+        document.body.appendChild(tests);
+    }
+</script>
 </body>
 </html>
