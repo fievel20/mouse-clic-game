@@ -166,17 +166,18 @@ window.MouseGame = (() => {
     }
 
     // Dessin de souris, avec la partie à utiliser en vert.
-    // active : left, right, middle, wheel-up, wheel-down, wheel, drag, double, move, all
+    // active : left, right, middle, wheel-up, wheel-down, wheel, drag, double, triple, move, all
     function mouseSvg(active) {
         const on = (part) => (active === part || active === 'all'
             || (part === 'middle' && active.startsWith('wheel'))
-            || (part === 'left' && (active === 'drag' || active === 'double'))) ? ' active' : '';
+            || (part === 'left' && ['drag', 'double', 'triple'].includes(active))) ? ' active' : '';
         let arrow = '';
         if (active === 'wheel-up') arrow = '<path class="arrow" d="M80 6 L90 22 H70 Z"/>';
         if (active === 'wheel-down') arrow = '<path class="arrow" d="M80 34 L90 18 H70 Z"/>';
         if (active === 'wheel') arrow = '<path class="arrow" d="M80 2 L88 14 H72 Z M80 38 L88 26 H72 Z"/>';
         if (active === 'drag') arrow = '<path class="arrow" d="M72 44 H80 V36 L90 50 L80 64 V56 H72 Z"/>';
         if (active === 'double') arrow = '<text class="arrow-text" x="80" y="26" text-anchor="middle">×2</text>';
+        if (active === 'triple') arrow = '<text class="arrow-text" x="80" y="26" text-anchor="middle">×3</text>';
         // Déplacer la souris sans cliquer : flèches dans les 4 directions
         if (active === 'move') arrow = '<path class="arrow" d="M80 6 L86 14 H74 Z M80 42 L86 34 H74 Z M70 24 L77 18 V30 Z M90 24 L83 18 V30 Z"/>';
         const viewBox = arrow ? '12 0 80 84' : '12 0 60 84';
@@ -271,9 +272,9 @@ window.MouseGame = (() => {
         return card;
     }
 
-    // Le chemin serpente : 4 étapes par ligne, une ligne sur deux de droite à gauche
+    // Le chemin serpente : 5 étapes par ligne, une ligne sur deux de droite à gauche
     function renderMenu() {
-        const PER_ROW = 4;
+        const PER_ROW = 5;
         const here = currentStep();
         renderBadges();
         cards.innerHTML = '';

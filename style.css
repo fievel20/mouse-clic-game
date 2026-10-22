@@ -24,8 +24,8 @@ body {
 }
 
 h1 {
-    font-size: 36px;
-    margin: 0 0 8px;
+    font-size: 32px;
+    margin: 0 0 4px;
 }
 
 h2 {
@@ -41,8 +41,9 @@ h2 {
 /* ---------- Menu ---------- */
 /* ---------- Chemin de progression ---------- */
 /* 4 étapes par ligne ; une ligne sur deux se lit de droite à gauche */
+/* 5 cartes de 170 px et 4 liaisons de 24 px */
 .path {
-    width: 856px;
+    width: 946px;
     margin: 0 auto;
 }
 
@@ -56,14 +57,31 @@ h2 {
 }
 
 .path .card {
-    width: 190px;
+    width: 170px;
+    padding: 12px 6px;
     box-sizing: border-box;
     flex-shrink: 0;
 }
 
+.path .card .card-title {
+    font-size: 18px;
+}
+
+.path .card .card-text {
+    font-size: 14px;
+}
+
+.path .levels {
+    gap: 4px;
+}
+
+.path .level {
+    width: 48px;
+}
+
 /* Liaison pointillée entre deux étapes, verte une fois l'étape franchie */
 .connector {
-    width: 32px;
+    width: 24px;
     align-self: center;
     border-top: 4px dotted #c8c8c8;
 }
@@ -77,13 +95,13 @@ h2 {
 .turn {
     width: 0;
     height: 22px;
-    /* Au milieu de la carte du bout de ligne (190 px de large) */
-    margin: 0 93px 0 auto;
+    /* Au milieu de la carte du bout de ligne (170 px de large) */
+    margin: 0 83px 0 auto;
     border-right: 4px dotted #c8c8c8;
 }
 
 .turn.left {
-    margin: 0 auto 0 93px;
+    margin: 0 auto 0 83px;
 }
 
 .card {
@@ -156,7 +174,7 @@ h2 {
     justify-content: center;
     gap: 14px;
     flex-wrap: wrap;
-    margin-bottom: 18px;
+    margin-bottom: 10px;
     font-size: 17px;
 }
 
@@ -594,6 +612,26 @@ h2 {
     color: #fff;
 }
 
+/* Page de texte à sélectionner */
+.text-page {
+    width: 620px;
+    padding: 10px 30px;
+    font-size: 20px;
+    line-height: 1.7;
+    text-align: left;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Le reste du jeu n'est pas sélectionnable ; ici, si */
+    user-select: text;
+    cursor: text;
+}
+
+.text-page::selection,
+.text-page *::selection {
+    background-color: #9cc7f5;
+}
+
 /* Faux navigateur (bouton central, niveau 3) */
 .browser {
     width: 600px;
@@ -899,6 +937,20 @@ h2 {
 
 .demo-menu .hovered {
     background-color: #f4f4f9;
+}
+
+.demo-text {
+    z-index: 2;
+    font-size: 22px;
+    white-space: nowrap;
+}
+
+/* Sous le texte, pour que les mots restent lisibles */
+.demo-highlight {
+    z-index: 1;
+    transform: none;
+    background-color: #9cc7f5;
+    transition: width 0.9s ease-in-out;
 }
 
 .demo-tooltip {

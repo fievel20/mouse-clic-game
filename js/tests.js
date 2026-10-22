@@ -79,7 +79,38 @@
         el.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
     }
 
+    // Sélectionne du texte dans la page puis relâche le bouton (clicks : 1 glisser, 2 double, 3 triple)
+    function selectText(paragraph, start, end, clicks) {
+        const range = document.createRange();
+        range.setStart(paragraph.firstChild, start);
+        range.setEnd(paragraph.firstChild, end);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        paragraph.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0, detail: clicks }));
+    }
+
+    function selectWanted() {
+        const paragraphs = $$('.text-page p');
+        // \S et non \w, qui ne reconnaît pas les lettres accentuées de « deuxième »
+        const triple = message().match(/Triple-cliquez dans le (\S+) paragraphe/);
+        if (triple) {
+            const p = paragraphs[['premier', 'deuxième', 'troisième'].indexOf(triple[1])];
+            selectText(p, 0, p.firstChild.length, 3);
+            return;
+        }
+        const wanted = quoted()[0];
+        if (!wanted) return;
+        const p = paragraphs.find((el) => el.textContent.includes(wanted));
+        const start = p.textContent.indexOf(wanted);
+        selectText(p, start, start + wanted.length, /Double-cliquez/.test(message()) ? 2 : 1);
+    }
+
     function step() {
+        if ($('.text-page')) {
+            selectWanted();
+            return;
+        }
         if ($('#gameTitle').textContent.startsWith('Survol')) {
             const [first, second] = quoted();
             if ($('.hover-desk')) {
@@ -197,7 +228,7 @@
         const locked = $$('.path .card.locked').length;
         const here = $('.path .card.here .card-title');
         log(locked === MouseGame.activities.length - 1 && here && here.textContent === 'Survol'
-            && $('.badges-title').textContent.includes('0 / 8'), 'Chemin : au départ, seul « Survol » est ouvert');
+            && $('.badges-title').textContent.includes('0 / 9'), 'Chemin : au départ, seul « Survol » est ouvert');
     }
 
     // Progression d'avant l'atelier Survol : les ateliers déjà commencés restent ouverts
@@ -217,9 +248,9 @@
     // Après tous les niveaux : 7 badges, diplôme, plus aucun atelier verrouillé
     function checkEndOfPath() {
         MouseGame.showMenu();
-        log($('.badges-title').textContent.includes('8 / 8') && $('#badges .diploma') && !$('.path .card.locked')
-            && $$('.path .card-badge').length === 8 && $$('.connector.done').length === 6 && $('.turn.done'),
-        'Chemin : 8 badges sur 8, diplôme et chemin entièrement vert');
+        log($('.badges-title').textContent.includes('9 / 9') && $('#badges .diploma') && !$('.path .card.locked')
+            && $$('.path .card-badge').length === 9 && $$('.connector.done').length === 7 && $('.turn.done'),
+        'Chemin : 9 badges sur 9, diplôme et chemin entièrement vert');
     }
 
     // Sans bouton central : l'atelier est franchi, et son badge n'est plus demandé
@@ -231,8 +262,8 @@
         } catch (e) { /* stockage indisponible */ }
         MouseGame.showMenu();
         const here = $('.path .card.here .card-title');
-        log(here && here.textContent === 'Molette' && $('.badges-title').textContent.includes('0 / 7'),
-            'Chemin sans bouton central : « Molette » s’ouvre et il reste 7 badges');
+        log(here && here.textContent === 'Molette' && $('.badges-title').textContent.includes('0 / 8'),
+            'Chemin sans bouton central : « Molette » s’ouvre et il reste 8 badges');
     }
 
     // Scénarios d'erreur : on vérifie que le jeu compte bien les erreurs
@@ -252,6 +283,29 @@
         const wrongChild = $$('.desk-sub-item').find((i) => i.dataset.name !== childName);
         press(wrongChild, 0);
         log(errorsCount() === 1, 'Survol niv. 2 : le mauvais choix du sous-menu compte une erreur');
+
+        MouseGame.startActivity(byId('selection'), 1);
+        const word = quoted()[0];
+        const wordParagraph = $$('.text-page p').find((el) => el.textContent.includes(word));
+        const wordStart = wordParagraph.textContent.indexOf(word);
+        selectText(wordParagraph, wordStart, wordStart + 3, 1);
+        await wait(30);
+        log(errorsCount() === 1 && /Il manque un bout/.test(message()), 'Sélection : un mot sélectionné à moitié compte une erreur');
+
+        // Niveau 3 : la bonne sélection faite en glissant au lieu du raccourci est refusée, sans erreur
+        MouseGame.startActivity(byId('selection'), 3);
+        const shortcut = message();
+        if (/Double-cliquez/.test(shortcut)) {
+            const w = quoted()[0];
+            const p = $$('.text-page p').find((el) => el.textContent.includes(w));
+            selectText(p, p.textContent.indexOf(w), p.textContent.indexOf(w) + w.length, 1);
+        } else {
+            const p = $$('.text-page p')[['premier', 'deuxième', 'troisième'].indexOf(shortcut.match(/le (\S+) paragraphe/)[1])];
+            selectText(p, 0, p.firstChild.length, 1);
+        }
+        await wait(30);
+        log(errorsCount() === 0 && /essayez le (double|triple)-clic/.test(message()) && $('#score').textContent.startsWith('Réussites : 0'),
+            'Sélection niv. 3 : sans le raccourci, on propose de réessayer');
 
         MouseGame.startActivity(byId('gauche'), 1);
         press($('.cell.target'), 2);

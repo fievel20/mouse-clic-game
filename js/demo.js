@@ -235,6 +235,48 @@ window.MouseDemo = (() => {
             await wait(1800);
         },
 
+        async selection() {
+            setMouse('drag');
+            const line = put('Le petit <span class="w1">chat</span> dort au <span class="w2">soleil</span>.', 170, 95, 'demo-text');
+            // Position d'un mot dans la scène, pour y placer la flèche et le surlignage
+            const box = (el) => {
+                const s = scene.getBoundingClientRect();
+                const r = el.getBoundingClientRect();
+                return { left: r.left - s.left, right: r.right - s.left, top: r.top - s.top, height: r.height };
+            };
+            const highlight = (el) => {
+                const b = box(el);
+                const h = put('', b.left, b.top, 'demo-highlight');
+                h.style.height = b.height + 'px';
+                h.style.width = '0px';
+                return { h, b };
+            };
+            await caption('Sélectionner un mot, c’est le surligner avec la souris.', 2400);
+            const first = highlight(line.querySelector('.w1'));
+            const y = first.b.top + first.b.height / 2;
+            captionElement.textContent = 'Cliquez juste avant le mot et gardez le bouton enfoncé…';
+            await moveTo(first.b.left - 1, y);
+            await press('left', true);
+            await wait(900);
+            captionElement.textContent = '…glissez jusqu’à la fin du mot : il se colore en bleu.';
+            first.h.style.width = (first.b.right - first.b.left) + 'px';
+            await moveTo(first.b.right + 1, y);
+            await wait(500);
+            release('left');
+            await caption('Relâchez : le mot est sélectionné !', 2200);
+            first.h.remove();
+            setMouse('double');
+            const second = highlight(line.querySelector('.w2'));
+            captionElement.textContent = 'Astuce : un double-clic sur un mot le sélectionne d’un coup.';
+            await moveTo((second.b.left + second.b.right) / 2, y);
+            await press('left');
+            await wait(120);
+            await press('left');
+            second.h.style.transition = 'none';
+            second.h.style.width = (second.b.right - second.b.left) + 'px';
+            await caption('Et un triple-clic sélectionne tout le paragraphe.', 2600);
+        },
+
         async melange() {
             const targets = [file(90, 80), file(200, 150), file(290, 70)];
             await caption('Dans le Grand défi, les boutons changent à chaque fichier.', 2400);
