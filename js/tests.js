@@ -151,8 +151,47 @@
             return;
         }
         const errors = errorsCount();
-        const unlocked = number === activity.levels.length || $('#resultDetail').textContent.includes('débloqué');
-        log(errors === 0 && unlocked, `${name} : ${errors} erreur(s)${unlocked ? '' : ', niveau suivant non débloqué'}`);
+        const detail = $('#resultDetail').textContent;
+        const isLastLevel = number === activity.levels.length;
+        const isLastActivity = activity === MouseGame.activities[MouseGame.activities.length - 1];
+        const problems = [];
+        if (!isLastLevel && !detail.includes('débloqué')) problems.push('niveau suivant non débloqué');
+        // Niveau 1 réussi : l'atelier suivant du chemin s'ouvre
+        if (number === 1 && !isLastActivity && !detail.includes('Nouvel atelier')) problems.push('atelier suivant non annoncé');
+        // Dernier niveau réussi : badge gagné
+        if (isLastLevel && !detail.includes('Nouveau badge')) problems.push('badge non annoncé');
+        if (isLastLevel && isLastActivity && !detail.includes('Tous les badges')) problems.push('diplôme non annoncé');
+        log(errors === 0 && !problems.length, `${name} : ${errors} erreur(s)${problems.length ? ', ' + problems.join(', ') : ''}`);
+    }
+
+    // Chemin de progression : au départ, seul le premier atelier est ouvert
+    function checkStartOfPath() {
+        MouseGame.showMenu();
+        const locked = $$('.path .card.locked').length;
+        const here = $('.path .card.here .card-title');
+        log(locked === MouseGame.activities.length - 1 && here && here.textContent === 'Clic gauche'
+            && $('.badges-title').textContent.includes('0 / 7'), 'Chemin : au départ, seul « Clic gauche » est ouvert');
+    }
+
+    // Après tous les niveaux : 7 badges, diplôme, plus aucun atelier verrouillé
+    function checkEndOfPath() {
+        MouseGame.showMenu();
+        log($('.badges-title').textContent.includes('7 / 7') && $('#badges .diploma') && !$('.path .card.locked')
+            && $$('.path .card-badge').length === 7 && $$('.connector.done').length === 5 && $('.turn.done'),
+        'Chemin : 7 badges sur 7, diplôme et chemin entièrement vert');
+    }
+
+    // Sans bouton central : l'atelier est franchi, et son badge n'est plus demandé
+    function checkWithoutMiddle() {
+        MouseGame.resetProgress();
+        try {
+            localStorage.setItem('test.mouseClicGame.stars', JSON.stringify({ 'gauche.1': 3, 'droit.1': 3, 'double.1': 3 }));
+            localStorage.setItem('test.mouseClicGame.settings', JSON.stringify({ noMiddle: true }));
+        } catch (e) { /* stockage indisponible */ }
+        MouseGame.showMenu();
+        const here = $('.path .card.here .card-title');
+        log(here && here.textContent === 'Molette' && $('.badges-title').textContent.includes('0 / 6'),
+            'Chemin sans bouton central : « Molette » s’ouvre et il reste 6 badges');
     }
 
     // Scénarios d'erreur : on vérifie que le jeu compte bien les erreurs
@@ -223,11 +262,14 @@
 
     async function run() {
         MouseGame.resetProgress();
+        checkStartOfPath();
         for (const activity of MouseGame.activities) {
             for (let n = 1; n <= activity.levels.length; n++) {
                 await playLevel(activity, n);
             }
         }
+        checkEndOfPath();
+        checkWithoutMiddle();
         await scenarios();
         await demos();
         MouseGame.resetProgress();

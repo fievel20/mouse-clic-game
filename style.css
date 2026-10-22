@@ -35,44 +35,189 @@ h2 {
 
 .subtitle {
     font-size: 20px;
-    margin: 0 0 30px;
+    margin: 0 0 16px;
 }
 
 /* ---------- Menu ---------- */
-/* 4 cartes par ligne au plus, la dernière ligne centrée */
-.cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    max-width: 860px;
+/* ---------- Chemin de progression ---------- */
+/* 4 étapes par ligne ; une ligne sur deux se lit de droite à gauche */
+.path {
+    width: 856px;
     margin: 0 auto;
 }
 
-.cards .card {
-    width: 200px;
+.path-row {
+    display: flex;
+    align-items: stretch;
+}
+
+.path-row.reverse {
+    flex-direction: row-reverse;
+}
+
+.path .card {
+    width: 190px;
     box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* Liaison pointillée entre deux étapes, verte une fois l'étape franchie */
+.connector {
+    width: 32px;
+    align-self: center;
+    border-top: 4px dotted #c8c8c8;
+}
+
+.connector.done,
+.turn.done {
+    border-color: #4caf50;
+}
+
+/* Virage vers la ligne suivante, sous la dernière carte */
+.turn {
+    width: 0;
+    height: 22px;
+    /* Au milieu de la carte du bout de ligne (190 px de large) */
+    margin: 0 93px 0 auto;
+    border-right: 4px dotted #c8c8c8;
+}
+
+.turn.left {
+    margin: 0 auto 0 93px;
 }
 
 .card {
+    position: relative;
     background-color: #ffffff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
-    border: none;
-    padding: 20px 10px;
+    border: 3px solid transparent;
+    padding: 12px 8px;
     cursor: pointer;
     font-family: inherit;
     color: #333;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     transition: transform 0.1s;
 }
 
-.card:hover {
+.card:hover:not(.locked) {
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Souris un peu plus petite sur le chemin, pour qu'il tienne dans l'écran */
+.path .card .mouse-svg {
+    width: auto !important;
+    height: 60px;
+}
+
+.card .step {
+    font-size: 13px;
+    color: #808080;
+}
+
+.card .step.here {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.card.here {
+    border-color: #4caf50;
+}
+
+.card.locked {
+    cursor: default;
+    background-color: #ececf2;
+    box-shadow: none;
+}
+
+.card.locked .mouse-svg {
+    opacity: 0.35;
+}
+
+.card.locked .card-title {
+    color: #808080;
+}
+
+.card-badge {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 22px;
+}
+
+/* ---------- Badges ---------- */
+.badges {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    font-size: 17px;
+}
+
+.medals {
+    display: flex;
+    gap: 6px;
+}
+
+.medal {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e0e0e6;
+    border: 3px solid #c8c8c8;
+    box-sizing: border-box;
+}
+
+.medal .mouse-svg {
+    width: 20px !important;
+    height: auto;
+    opacity: 0.35;
+}
+
+.medal.earned {
+    background-color: #ffe08a;
+    border-color: #f5b301;
+}
+
+.medal.earned .mouse-svg {
+    opacity: 1;
+}
+
+.diploma {
+    font-weight: bold;
+    color: #4caf50;
+}
+
+/* Nouveau badge annoncé en fin de partie */
+.new-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 14px;
+    animation: badge-in 0.6s ease-out;
+}
+
+.new-badge .medal {
+    width: 64px;
+    height: 64px;
+}
+
+.new-badge .medal .mouse-svg {
+    width: 32px !important;
+}
+
+@keyframes badge-in {
+    from { transform: scale(0.4); opacity: 0; }
 }
 
 .card .card-title {

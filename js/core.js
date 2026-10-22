@@ -17,6 +17,8 @@ window.MouseGame = (() => {
     const resultMessageElement = document.getElementById('resultMessage');
     const resultDetailElement = document.getElementById('resultDetail');
     const nextLevelButton = document.getElementById('nextLevelButton');
+    const nextActivityButton = document.getElementById('nextActivityButton');
+    const badgesElement = document.getElementById('badges');
 
     // index.html?test : les pauses entre manches sont accélérées pour les tests automatiques,
     // et la progression est enregistrée à part pour ne pas toucher aux vraies étoiles
@@ -118,6 +120,39 @@ window.MouseGame = (() => {
         return best;
     }
 
+    // ---------- Chemin de progression et badges ----------
+
+    // Un atelier est franchi avec ★★ au niveau 1 (ou, pour le bouton central, s'il a été passé faute de bouton)
+    function isPassed(activity) {
+        return getStars(activity.id, 1) >= STARS_TO_UNLOCK || (activity.id === 'central' && Boolean(getSetting('noMiddle')));
+    }
+
+    // Les ateliers s'ouvrent dans l'ordre du chemin
+    function isActivityUnlocked(activity) {
+        return activities.slice(0, activities.indexOf(activity)).every(isPassed);
+    }
+
+    // Badge d'un atelier : son dernier niveau réussi avec ★★
+    function hasBadge(activity) {
+        return getStars(activity.id, activity.levels.length) >= STARS_TO_UNLOCK;
+    }
+
+    // Badges à gagner : sans bouton central, son badge n'est pas demandé
+    function badgeActivities() {
+        return activities.filter((a) => hasBadge(a) || !(a.id === 'central' && getSetting('noMiddle')));
+    }
+
+    function allBadges() {
+        return badgeActivities().every(hasBadge);
+    }
+
+    // « Vous êtes ici » : le premier atelier pas encore franchi, sinon le premier sans badge
+    function currentStep() {
+        return activities.find((a) => isActivityUnlocked(a) && !isPassed(a))
+            || badgeActivities().find((a) => !hasBadge(a))
+            || null;
+    }
+
     function getSetting(name) {
         return readJson(SETTINGS_KEY)[name];
     }
@@ -175,40 +210,90 @@ window.MouseGame = (() => {
 
     // ---------- Menu ----------
 
-    function renderMenu() {
-        const noMiddle = getSetting('noMiddle');
-        cards.innerHTML = '';
-        activities.forEach((activity) => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.tabIndex = 0;
-            card.setAttribute('role', 'button');
-            const recommended = recommendedLevel(activity);
-            const skipped = activity.id === 'central' && noMiddle && !getStars(activity.id, 1);
-            const levelButtons = activity.levels.map((_, i) => {
-                const n = i + 1;
-                if (!isUnlocked(activity, n)) {
-                    return `<button class="level" disabled title="Gagnez ★★ au niveau ${n - 1} pour débloquer">🔒<span>Niv. ${n}</span></button>`;
-                }
-                const count = getStars(activity.id, n);
-                return `<button class="level${n === recommended ? ' current' : ''}" data-level="${n}">
-                    <span>Niv. ${n}</span><span class="stars">${count ? starsText(count).replace(/★/g, '<b>★</b>') : '☆☆☆'}</span></button>`;
-            }).join('');
-            card.innerHTML = `${mouseSvg(activity.hint)}
+    function renderBadges() {
+        const list = badgeActivities();
+        const earned = list.filter(hasBadge).length;
+        const medals = list.map((a) => {
+            const title = hasBadge(a) ? `Badge « ${a.badge} »` : `Badge « ${a.badge} » : réussissez le niveau 3 de « ${a.title} » avec ★★`;
+            return `<span class="medal${hasBadge(a) ? ' earned' : ''}" title="${title}">${mouseSvg(a.hint)}</span>`;
+        }).join('');
+        badgesElement.innerHTML = `<span class="badges-title">🏅 Mes badges : ${earned} / ${list.length}</span>
+            <span class="medals">${medals}</span>`
+            + (allBadges() ? '<span class="diploma">🎓 Bravo, vous maîtrisez la souris !</span>' : '');
+    }
+
+    function makeCard(activity, index, here) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const step = `<span class="step${here ? ' here' : ''}">${here ? '▶ Vous êtes ici' : `Étape ${index + 1}`}</span>`;
+        const badge = hasBadge(activity) ? `<span class="card-badge" title="Badge « ${activity.badge} »">🏅</span>` : '';
+
+        if (!isActivityUnlocked(activity)) {
+            const blocking = activities.find((a) => !isPassed(a));
+            card.classList.add('locked');
+            card.innerHTML = `${step}${mouseSvg(activity.hint)}
                 <span class="card-title">${activity.title}</span>
-                <span class="card-text">${skipped ? 'Atelier passé : pas de bouton central.' : activity.text}</span>
-                <span class="levels">${levelButtons}</span>`;
-            if (skipped) card.classList.add('skipped');
-            card.addEventListener('click', (e) => {
-                const button = e.target.closest('.level');
-                if (button && button.disabled) return;
-                startActivity(activity, button ? Number(button.dataset.level) : recommended);
-            });
-            card.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && e.target === card) startActivity(activity, recommended);
-            });
-            cards.appendChild(card);
+                <span class="card-text">🔒 Gagnez d’abord ★★ au niveau 1 de « ${blocking.title} ».</span>`;
+            return card;
+        }
+
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        const recommended = recommendedLevel(activity);
+        const skipped = activity.id === 'central' && getSetting('noMiddle') && !getStars(activity.id, 1);
+        const levelButtons = activity.levels.map((_, i) => {
+            const n = i + 1;
+            if (!isUnlocked(activity, n)) {
+                return `<button class="level" disabled title="Gagnez ★★ au niveau ${n - 1} pour débloquer">🔒<span>Niv. ${n}</span></button>`;
+            }
+            const count = getStars(activity.id, n);
+            return `<button class="level${n === recommended ? ' current' : ''}" data-level="${n}">
+                <span>Niv. ${n}</span><span class="stars">${count ? starsText(count).replace(/★/g, '<b>★</b>') : '☆☆☆'}</span></button>`;
+        }).join('');
+        card.innerHTML = `${step}${badge}${mouseSvg(activity.hint)}
+            <span class="card-title">${activity.title}</span>
+            <span class="card-text">${skipped ? 'Atelier passé : pas de bouton central.' : activity.text}</span>
+            <span class="levels">${levelButtons}</span>`;
+        if (skipped) card.classList.add('skipped');
+        if (here) card.classList.add('here');
+        card.addEventListener('click', (e) => {
+            const button = e.target.closest('.level');
+            if (button && button.disabled) return;
+            startActivity(activity, button ? Number(button.dataset.level) : recommended);
         });
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target === card) startActivity(activity, recommended);
+        });
+        return card;
+    }
+
+    // Le chemin serpente : 4 étapes par ligne, une ligne sur deux de droite à gauche
+    function renderMenu() {
+        const PER_ROW = 4;
+        const here = currentStep();
+        renderBadges();
+        cards.innerHTML = '';
+        for (let start = 0; start < activities.length; start += PER_ROW) {
+            const rowIndex = start / PER_ROW;
+            const row = document.createElement('div');
+            row.className = 'path-row' + (rowIndex % 2 ? ' reverse' : '');
+            activities.slice(start, start + PER_ROW).forEach((activity, i) => {
+                const index = start + i;
+                if (i > 0) {
+                    const link = document.createElement('div');
+                    link.className = 'connector' + (isPassed(activities[index - 1]) ? ' done' : '');
+                    row.appendChild(link);
+                }
+                row.appendChild(makeCard(activity, index, activity === here));
+            });
+            cards.appendChild(row);
+            const last = start + PER_ROW - 1;
+            if (last < activities.length - 1) {
+                const turn = document.createElement('div');
+                turn.className = 'turn' + (rowIndex % 2 ? ' left' : '') + (isPassed(activities[last]) ? ' done' : '');
+                cards.appendChild(turn);
+            }
+        }
     }
 
     function showMenu() {
@@ -287,9 +372,14 @@ window.MouseGame = (() => {
         const stars = errors <= 1 ? 3 : errors <= 4 ? 2 : 1;
         const hasNext = level.number < current.levels.length;
         const wasLocked = hasNext && !isUnlocked(current, level.number + 1);
+        const nextActivity = activities[activities.indexOf(current) + 1];
+        const nextActivityWasLocked = nextActivity && !isActivityUnlocked(nextActivity);
+        const hadBadge = hasBadge(current);
+        const hadAllBadges = allBadges();
         saveStars(current.id, level.number, stars);
         if (current.id === 'central') setSetting('noMiddle', false);
         const nextOpen = hasNext && isUnlocked(current, level.number + 1);
+        const nextActivityOpened = nextActivityWasLocked && isActivityUnlocked(nextActivity);
 
         if (stars === 3) {
             resultMessageElement.innerHTML = `🤩 Bravo ! 🤩<br>${starsText(3)}`;
@@ -306,8 +396,21 @@ window.MouseGame = (() => {
         } else if (stars < 3) {
             detail += '<br>Rejouez pour gagner plus d’étoiles.';
         }
+        if (nextActivityOpened) {
+            detail += `<br><strong>🔓 Nouvel atelier sur le chemin : « ${nextActivity.title} » !</strong>`;
+        }
+        if (!hadBadge && hasBadge(current)) {
+            detail += `<div class="new-badge"><span class="medal earned">${mouseSvg(current.hint)}</span>
+                <span>Nouveau badge :<br><strong>« ${current.badge} »</strong></span></div>`;
+        }
+        if (!hadAllBadges && allBadges()) {
+            detail += '<div class="diploma">🎓 Tous les badges ! Bravo, vous maîtrisez la souris !</div>';
+        }
         resultDetailElement.innerHTML = detail;
         nextLevelButton.classList.toggle('hidden', !nextOpen);
+        nextActivityButton.classList.toggle('hidden', !nextActivityOpened);
+        nextActivityButton.textContent = nextActivityOpened ? `Atelier suivant : ${nextActivity.title} →` : '';
+        nextActivityButton.onclick = () => startActivity(nextActivity, 1);
         resultModal.style.display = 'block';
     }
 

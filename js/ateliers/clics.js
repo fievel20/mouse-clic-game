@@ -254,7 +254,7 @@
     const SMALL = { cols: 10, rows: 6, cell: 46 };
 
     MouseGame.register({
-        id: 'gauche', order: 10, title: 'Clic gauche', hint: 'left',
+        id: 'gauche', order: 10, title: 'Clic gauche', hint: 'left', badge: 'As du clic gauche',
         text: 'Cliquez sur le fichier avec le bouton gauche.',
         levels: [
             { name: 'Un grand fichier à cliquer', rounds: 10 },
@@ -264,7 +264,7 @@
         start: (game, level) => startClickGame(game, level, [0])
     });
     MouseGame.register({
-        id: 'droit', order: 20, title: 'Clic droit', hint: 'right',
+        id: 'droit', order: 20, title: 'Clic droit', hint: 'right', badge: 'Maître du menu',
         text: 'Ouvrez le menu du fichier avec le bouton droit.',
         levels: [
             { name: 'Ouvrir le menu du fichier', rounds: 10 },
@@ -274,7 +274,7 @@
         start: (game, level) => startClickGame(game, level, [2])
     });
     MouseGame.register({
-        id: 'central', order: 30, title: 'Bouton central', hint: 'middle', usesMiddle: true,
+        id: 'central', order: 30, title: 'Bouton central', hint: 'middle', usesMiddle: true, badge: 'Pro des onglets',
         text: 'Appuyez sur la molette, comme un bouton.',
         levels: [
             { name: 'Appuyer sur la molette', rounds: 10 },
@@ -284,7 +284,7 @@
         start: (game, level) => (level.tabs ? startTabsGame(game, level) : startClickGame(game, level, [1]))
     });
     MouseGame.register({
-        id: 'melange', order: 90, title: 'Grand défi', hint: 'all', usesMiddle: true,
+        id: 'melange', order: 90, title: 'Grand défi', hint: 'all', usesMiddle: true, badge: 'Champion du Grand défi',
         text: 'Tous les boutons mélangés : regardez bien la souris !',
         levels: [
             { name: 'Les boutons mélangés', rounds: 15 },
