@@ -143,9 +143,9 @@ window.MouseGame = (() => {
         const viewBox = arrow ? '12 0 80 84' : '12 0 60 84';
         return `<svg class="mouse-svg" viewBox="${viewBox}" style="width:${arrow ? 80 : 60}px">
             <path class="part" d="M15 36 V54 A27 27 0 0 0 69 54 V36 Z"/>
-            <path class="part${on('left')}" d="M15 36 V30 A27 27 0 0 1 42 3 V36 Z"/>
-            <path class="part${on('right')}" d="M69 36 V30 A27 27 0 0 0 42 3 V36 Z"/>
-            <rect class="part${on('middle')}" x="37" y="10" width="10" height="20" rx="5"/>${arrow}
+            <path class="part${on('left')}" data-part="left" d="M15 36 V30 A27 27 0 0 1 42 3 V36 Z"/>
+            <path class="part${on('right')}" data-part="right" d="M69 36 V30 A27 27 0 0 0 42 3 V36 Z"/>
+            <rect class="part${on('middle')}" data-part="middle" x="37" y="10" width="10" height="20" rx="5"/>${arrow}
         </svg>`;
     }
 
@@ -236,12 +236,31 @@ window.MouseGame = (() => {
         skipMiddleButton.classList.toggle('hidden', !activity.usesMiddle || middleAlreadySkipped);
         board.innerHTML = '';
         updateStats();
+        // Première visite de l'atelier : on montre d'abord la démonstration
+        const seen = getSetting('demosSeen') || {};
+        if (!isTest && !seen[activity.id]) {
+            showDemo(() => startActivity(activity, number));
+            return;
+        }
         startTime = Date.now();
         timerElement.textContent = 'Temps : 00:00';
         timerInterval = setInterval(() => {
             timerElement.textContent = 'Temps : ' + formatTime(Math.floor((Date.now() - startTime) / 1000));
         }, 1000);
         activity.start(api, level);
+    }
+
+    // Démonstration animée de l'atelier en cours (js/demo.js), puis onDone()
+    function showDemo(onDone) {
+        stopActivity();
+        timerElement.textContent = 'Temps : 00:00';
+        const activity = current;
+        MouseDemo.play(activity, () => {
+            const seen = getSetting('demosSeen') || {};
+            seen[activity.id] = true;
+            setSetting('demosSeen', seen);
+            onDone();
+        });
     }
 
     function stopActivity() {
@@ -316,6 +335,11 @@ window.MouseGame = (() => {
     document.getElementById('menuButton').addEventListener('click', showMenu);
     document.getElementById('replayButton').addEventListener('click', () => startActivity(current, level.number));
     nextLevelButton.addEventListener('click', () => startActivity(current, level.number + 1));
+    document.getElementById('demoButton').addEventListener('click', () => {
+        // La manche en cours est recommencée après la démonstration
+        const number = level.number;
+        showDemo(() => startActivity(current, number));
+    });
     skipMiddleButton.addEventListener('click', () => {
         setSetting('noMiddle', true);
         // Le grand défi continue sans le bouton central ; l'atelier central est passé
@@ -336,7 +360,10 @@ window.MouseGame = (() => {
 
     return {
         isTest,
+        speed,
+        ICONS,
         activities,
+        mouseSvg,
         startActivity,
         showMenu,
         resetProgress() {

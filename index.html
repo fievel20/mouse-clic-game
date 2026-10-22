@@ -24,7 +24,10 @@
             <h2 id="gameTitle"></h2>
             <div class="level-text" id="levelText"></div>
         </div>
-        <button class="back-button hidden" id="skipMiddle">Je n’ai pas de bouton central</button>
+        <div class="top-actions">
+            <button class="back-button" id="demoButton">▶ Revoir la démo</button>
+            <button class="back-button hidden" id="skipMiddle">Je n’ai pas de bouton central</button>
+        </div>
     </div>
     <div class="instruction">
         <div class="mouse-hint" id="mouseHint"></div>
@@ -49,8 +52,23 @@
     </div>
 </div>
 
+<!-- Démonstration animée d'un atelier -->
+<div id="demoModal" class="modal">
+    <div class="modal-content demo-content">
+        <div class="demo-title" id="demoTitle"></div>
+        <div class="demo-stage">
+            <div class="demo-scene" id="demoScene"></div>
+            <div class="demo-mouse" id="demoMouse"></div>
+        </div>
+        <div class="demo-caption" id="demoCaption"></div>
+        <button class="reset-button secondary" id="demoReplay">↺ Revoir</button>
+        <button class="reset-button" id="demoGo">C’est parti !</button>
+    </div>
+</div>
+
 <!-- Scripts classiques (pas de modules) : le jeu s'ouvre aussi par double-clic sur index.html -->
 <script src="js/core.js"></script>
+<script src="js/demo.js"></script>
 <script src="js/ateliers/clics.js"></script>
 <script src="js/ateliers/double-clic.js"></script>
 <script src="js/ateliers/molette.js"></script>
