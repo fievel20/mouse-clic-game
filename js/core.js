@@ -166,11 +166,11 @@ window.MouseGame = (() => {
     }
 
     // Dessin de souris, avec la partie à utiliser en vert.
-    // active : left, right, middle, wheel-up, wheel-down, wheel, drag, double, triple, move, all
+    // active : left, right, middle, wheel-up, wheel-down, wheel, drag, double, triple, ctrl, shift, move, all
     function mouseSvg(active) {
         const on = (part) => (active === part || active === 'all'
             || (part === 'middle' && active.startsWith('wheel'))
-            || (part === 'left' && ['drag', 'double', 'triple'].includes(active))) ? ' active' : '';
+            || (part === 'left' && ['drag', 'double', 'triple', 'ctrl', 'shift'].includes(active))) ? ' active' : '';
         let arrow = '';
         if (active === 'wheel-up') arrow = '<path class="arrow" d="M80 6 L90 22 H70 Z"/>';
         if (active === 'wheel-down') arrow = '<path class="arrow" d="M80 34 L90 18 H70 Z"/>';
@@ -178,6 +178,9 @@ window.MouseGame = (() => {
         if (active === 'drag') arrow = '<path class="arrow" d="M72 44 H80 V36 L90 50 L80 64 V56 H72 Z"/>';
         if (active === 'double') arrow = '<text class="arrow-text" x="80" y="26" text-anchor="middle">×2</text>';
         if (active === 'triple') arrow = '<text class="arrow-text" x="80" y="26" text-anchor="middle">×3</text>';
+        // Touche du clavier à garder enfoncée pendant le clic
+        if (active === 'ctrl') arrow = '<text class="arrow-text key" x="80" y="24" text-anchor="middle">Ctrl</text>';
+        if (active === 'shift') arrow = '<text class="arrow-text key" x="80" y="24" text-anchor="middle">Maj</text>';
         // Déplacer la souris sans cliquer : flèches dans les 4 directions
         if (active === 'move') arrow = '<path class="arrow" d="M80 6 L86 14 H74 Z M80 42 L86 34 H74 Z M70 24 L77 18 V30 Z M90 24 L83 18 V30 Z"/>';
         const viewBox = arrow ? '12 0 80 84' : '12 0 60 84';
@@ -272,9 +275,9 @@ window.MouseGame = (() => {
         return card;
     }
 
-    // Le chemin serpente : 5 étapes par ligne, une ligne sur deux de droite à gauche
+    // Le chemin serpente : 6 étapes par ligne, une ligne sur deux de droite à gauche
     function renderMenu() {
-        const PER_ROW = 5;
+        const PER_ROW = 6;
         const here = currentStep();
         renderBadges();
         cards.innerHTML = '';

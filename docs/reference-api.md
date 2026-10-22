@@ -69,6 +69,7 @@ MouseGame.register({
 | `double`, `triple` | Bouton gauche en vert, avec « ×2 » ou « ×3 » |
 | `drag` | Bouton gauche en vert, avec une flèche vers la droite |
 | `wheel-up`, `wheel-down`, `wheel` | Molette en vert, avec une flèche vers le haut, vers le bas, ou les deux |
+| `ctrl`, `shift` | Bouton gauche en vert, avec le nom de la touche à garder enfoncée (« Ctrl », « Maj ») |
 | `move` | Aucun bouton, avec 4 flèches (déplacer sans cliquer) |
 | `all` | Les trois boutons en vert |
 
@@ -85,6 +86,7 @@ Pour ajouter un dessin, complétez `mouseSvg()` dans `js/core.js`. Les flèches 
 | Barre de défilement | `count`, `named`, `tools` (outils autorisés : `'thumb'`, `'arrows'`, `'track'` ; tous si absent), `near` (cible juste hors de vue) |
 | Glisser-déposer | `kinds` (types de fichiers à trier : `'doc'`, `'image'`, `'music'`), `size` (labyrinthe de `size × size` cases, impair) |
 | Sélection de texte | `mode` : `'word'`, `'group'`, `'shortcuts'` (double et triple-clic) |
+| Sélection multiple | `mode` : `'ctrl'` (Ctrl + clic), `'shift'` (Maj + clic), `'lasso'` (rectangle de sélection) |
 
 ## `window.MouseGame`
 

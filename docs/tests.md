@@ -45,6 +45,7 @@ La fonction `step()` regarde ce qui est affiché et fait **une** action :
 | À l'écran | Action du robot |
 | --- | --- |
 | Liste avec barre de défilement | Clique la ligne si elle est visible, sinon flèche (niveau 2) ou glisser de l'ascenseur |
+| Explorateur, liste ou bureau de la sélection multiple | Clic puis Ctrl + clic sur les fichiers demandés, ou clic puis Maj + clic, ou rectangle autour des photos |
 | Page de texte | Sélectionne le texte demandé, avec le bon nombre de clics (1, 2 ou 3) |
 | Atelier Survol | Survole la cible, ou le menu puis le sous-menu, ou clique le fichier nommé |
 | Menu contextuel ouvert | Clique l'action demandée |
@@ -66,6 +67,8 @@ Attention aux expressions régulières : `\w` ne reconnaît pas les lettres acce
 | Outil | Geste simulé |
 | --- | --- |
 | `press(el, bouton)` | `mousedown` avec le bouton 0 (gauche), 1 (central) ou 2 (droit) |
+| `pressWith(el, touches)` | Clic gauche avec des touches enfoncées, par exemple `{ ctrlKey: true }` ou `{ shiftKey: true }` |
+| `lassoAround(éléments)` | Trace un rectangle de sélection autour des éléments donnés |
 | `pointer(el, type, {x, y})` | Un événement `pointerdown`, `pointermove` ou `pointerup` à une position |
 | `hover(el)` | Un `mousemove` sur l'élément |
 | `selectText(p, début, fin, clics)` | Sélectionne du texte dans un paragraphe, puis relâche le bouton avec 1, 2 ou 3 clics |

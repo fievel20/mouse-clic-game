@@ -29,6 +29,7 @@ js/tests.js             Tests automatiques, chargés seulement avec index.html?t
 | Barre de défilement | `barre` | `barre.js` | 45 |
 | Glisser-déposer | `glisser` | `glisser.js` | 50 |
 | Sélection de texte | `selection` | `selection.js` | 60 |
+| Sélection multiple | `multiple` | `multiple.js` | 70 |
 | Grand défi | `melange` | `clics.js` | 90 |
 
 `clics.js` regroupe 4 ateliers : ils partagent la même grille de clic, avec des options différentes.
@@ -116,7 +117,7 @@ Chaque atelier a 3 niveaux. Le niveau *n* s'ouvre avec au moins **★★** au ni
 
 ### Chemin
 
-Le menu présente les ateliers dans l'ordre de `order`, 5 par ligne, une ligne sur deux de droite à gauche.
+Le menu présente les ateliers dans l'ordre de `order`, 6 par ligne (constante `PER_ROW` de `renderMenu`), une ligne sur deux de droite à gauche.
 
 - Un atelier est **franchi** avec ★★ à son niveau 1. Le bouton central compte aussi comme franchi si le joueur a indiqué ne pas en avoir (`noMiddle`).
 - Un atelier est **ouvert** si tous les ateliers précédents sont franchis, **ou** s'il a déjà été commencé (au moins une étoile à un niveau). La seconde règle évite de bloquer la progression existante quand un nouvel atelier est inséré dans le chemin.
