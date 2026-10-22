@@ -41,9 +41,9 @@ h2 {
 /* ---------- Menu ---------- */
 /* ---------- Chemin de progression ---------- */
 /* 4 étapes par ligne ; une ligne sur deux se lit de droite à gauche */
-/* 5 cartes de 170 px et 4 liaisons de 24 px */
+/* 6 cartes de 148 px et 5 liaisons de 16 px */
 .path {
-    width: 946px;
+    width: 968px;
     margin: 0 auto;
 }
 
@@ -57,31 +57,36 @@ h2 {
 }
 
 .path .card {
-    width: 170px;
-    padding: 12px 6px;
+    width: 148px;
+    padding: 12px 4px;
     box-sizing: border-box;
     flex-shrink: 0;
 }
 
 .path .card .card-title {
-    font-size: 18px;
+    font-size: 17px;
 }
 
 .path .card .card-text {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .path .levels {
-    gap: 4px;
+    gap: 3px;
 }
 
 .path .level {
-    width: 48px;
+    width: 42px;
+    font-size: 11px;
+}
+
+.path .level .stars {
+    font-size: 12px;
 }
 
 /* Liaison pointillée entre deux étapes, verte une fois l'étape franchie */
 .connector {
-    width: 24px;
+    width: 16px;
     align-self: center;
     border-top: 4px dotted #c8c8c8;
 }
@@ -95,13 +100,13 @@ h2 {
 .turn {
     width: 0;
     height: 22px;
-    /* Au milieu de la carte du bout de ligne (170 px de large) */
-    margin: 0 83px 0 auto;
+    /* Au milieu de la carte du bout de ligne (148 px de large) */
+    margin: 0 72px 0 auto;
     border-right: 4px dotted #c8c8c8;
 }
 
 .turn.left {
-    margin: 0 auto 0 83px;
+    margin: 0 auto 0 72px;
 }
 
 .card {
@@ -331,6 +336,11 @@ h2 {
     fill: #4caf50;
     font-size: 18px;
     font-weight: bold;
+}
+
+/* Nom d'une touche du clavier (Ctrl, Maj) */
+.mouse-svg .arrow-text.key {
+    font-size: 12px;
 }
 
 .top-actions {
@@ -696,6 +706,95 @@ h2 {
     background-color: #808080;
 }
 
+/* Sélection multiple : explorateur, liste et bureau */
+.ms-explorer {
+    display: grid;
+    grid-template-columns: repeat(6, 96px);
+    gap: 8px;
+    padding: 16px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ms-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 2px;
+    border-radius: 5px;
+    cursor: default;
+}
+
+.ms-item .icon {
+    width: 36px;
+    height: 36px;
+}
+
+.ms-item .label {
+    font-size: 13px;
+}
+
+.ms-item:hover,
+.ms-row:hover {
+    background-color: #f4f4f9;
+}
+
+/* Fichier sélectionné, en bleu clair comme dans l'explorateur de Windows */
+.ms-item.selected,
+.ms-row.selected {
+    background-color: #cce4fb;
+}
+
+.ms-list {
+    width: 380px;
+    padding: 6px 0;
+    text-align: left;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ms-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 30px;
+    padding: 0 16px;
+    font-size: 17px;
+    cursor: default;
+}
+
+.ms-row .icon {
+    width: 22px;
+    height: 22px;
+}
+
+.ms-desk {
+    position: relative;
+    width: 620px;
+    height: 330px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: default;
+}
+
+.ms-free {
+    position: absolute;
+    width: 76px;
+    height: 76px;
+    box-sizing: border-box;
+}
+
+.ms-lasso {
+    position: absolute;
+    border: 1px solid #1a5fb4;
+    background-color: rgba(26, 95, 180, 0.15);
+    pointer-events: none;
+}
+
 /* Page de texte à sélectionner */
 .text-page {
     width: 620px;
@@ -1052,6 +1151,36 @@ h2 {
     transform: none;
     background-color: #9cc7f5;
     transition: width 0.9s ease-in-out;
+}
+
+.demo-icon.demo-selected {
+    background-color: #cce4fb;
+}
+
+/* Touche du clavier dessinée (démo de la sélection multiple) */
+.demo-key {
+    padding: 6px 12px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #ffffff;
+    border: 2px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 3px 0 #333;
+}
+
+.demo-key.down {
+    transform: translate(-50%, calc(-50% + 2px));
+    box-shadow: 0 1px 0 #333;
+    color: #fff;
+    background-color: #4caf50;
+}
+
+.demo-lasso {
+    z-index: 3;
+    transform: none;
+    border: 1px solid #1a5fb4;
+    background-color: rgba(26, 95, 180, 0.15);
+    transition: width 0.9s ease-in-out, height 0.9s ease-in-out;
 }
 
 .demo-tooltip {

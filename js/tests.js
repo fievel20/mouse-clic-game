@@ -134,7 +134,45 @@
         }
     }
 
+    // Clic gauche avec touches du clavier : { ctrlKey: true } ou { shiftKey: true }
+    function pressWith(el, keys) {
+        el.dispatchEvent(new MouseEvent('mousedown', Object.assign({ bubbles: true, cancelable: true, button: 0 }, keys)));
+    }
+
+    const isPhoto = (el) => el.innerHTML.includes('<circle cx="9"');
+
+    // Trace un rectangle de sélection autour des photos du bureau (ou d'une partie)
+    function lassoAround(targets) {
+        const desk = $('.ms-desk');
+        const boxes = targets.map((el) => el.getBoundingClientRect());
+        const from = { x: Math.min(...boxes.map((b) => b.left)) - 8, y: Math.min(...boxes.map((b) => b.top)) - 8 };
+        const to = { x: Math.max(...boxes.map((b) => b.right)) + 8, y: Math.max(...boxes.map((b) => b.bottom)) + 8 };
+        pointer(desk, 'pointerdown', from);
+        pointer(desk, 'pointermove', to);
+        pointer(desk, 'pointerup', to);
+    }
+
+    function stepMultiple() {
+        const names = quoted();
+        if ($('.ms-explorer')) {
+            names.forEach((name, i) => {
+                const item = $$('.ms-explorer .ms-item').find((el) => el.textContent === name);
+                if (item) pressWith(item, i === 0 ? {} : { ctrlKey: true });
+            });
+        } else if ($('.ms-list') && names.length === 2) {
+            const row = (name) => $$('.ms-row').find((el) => el.textContent === name);
+            pressWith(row(names[0]), {});
+            pressWith(row(names[1]), { shiftKey: true });
+        } else if ($('.ms-desk') && !$('.ms-desk .success')) {
+            lassoAround($$('.ms-free').filter(isPhoto));
+        }
+    }
+
     function step() {
+        if ($('.ms-explorer, .ms-list, .ms-desk')) {
+            stepMultiple();
+            return;
+        }
         const scrollView = $('#board .sb-view');
         if (scrollView) {
             stepScrollbar(scrollView);
@@ -290,8 +328,8 @@
     function checkEndOfPath() {
         MouseGame.showMenu();
         const total = activities().length;
-        // Une liaison entre deux cartes d'une même ligne de 5 ; un virage entre deux lignes
-        const links = total - Math.ceil(total / 5);
+        // Une liaison entre deux cartes d'une même ligne ; un virage entre deux lignes
+        const links = total - $$('.path-row').length;
         log($('.badges-title').textContent.includes(`${total} / ${total}`) && $('#badges .diploma') && !$('.path .card.locked')
             && $$('.path .card-badge').length === total && $$('.connector.done').length === links
             && $$('.turn').every((turn) => turn.classList.contains('done')),
@@ -368,6 +406,27 @@
         dragThumbTo($('#board .sb-view'), 400);
         log($('#board .sb-view').dataset.scroll === '0' && /flèches/.test(message()) && errorsCount() === 0,
             'Barre niv. 2 : l’ascenseur est refusé, sans erreur, au profit des flèches');
+
+        MouseGame.startActivity(byId('multiple'), 1);
+        const [firstName, secondName] = quoted();
+        const msItem = (name) => $$('.ms-explorer .ms-item').find((el) => el.textContent === name);
+        pressWith(msItem(firstName), {});
+        pressWith(msItem(secondName), {});
+        log(errorsCount() === 1 && /Sans Ctrl/.test(message()) && $$('.ms-item.selected').length === 1,
+            'Sélection multiple : un clic sans Ctrl remplace la sélection et compte une erreur');
+
+        MouseGame.startActivity(byId('multiple'), 2);
+        const [rangeFrom, rangeTo] = quoted();
+        const msRows = $$('.ms-row');
+        const toIndex = msRows.findIndex((el) => el.textContent === rangeTo);
+        pressWith(msRows.find((el) => el.textContent === rangeFrom), {});
+        pressWith(msRows[toIndex + 1] || msRows[toIndex - 1], { shiftKey: true });
+        log(errorsCount() === 1, 'Sélection multiple niv. 2 : une mauvaise plage compte une erreur');
+
+        MouseGame.startActivity(byId('multiple'), 3);
+        lassoAround($$('.ms-free').filter(isPhoto).slice(0, 1));
+        log(errorsCount() === 1 && /Il manque 3 photos/.test(message()),
+            'Sélection multiple niv. 3 : un rectangle trop petit compte une erreur');
 
         MouseGame.startActivity(byId('gauche'), 1);
         press($('.cell.target'), 2);

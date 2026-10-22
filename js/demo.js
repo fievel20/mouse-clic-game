@@ -328,6 +328,43 @@ window.MouseDemo = (() => {
             await caption('Et un triple-clic sélectionne tout le paragraphe.', 2600);
         },
 
+        async multiple() {
+            setMouse('ctrl');
+            const files = [70, 170, 270].map((x) => file(x, 75));
+            const key = put('Ctrl', 50, 175, 'demo-key');
+            await caption('Pour choisir plusieurs fichiers, on s’aide de la touche Ctrl du clavier.', 2600);
+            captionElement.textContent = 'Un clic sélectionne un premier fichier…';
+            await moveToEl(files[0]);
+            await press('left');
+            files[0].classList.add('demo-selected');
+            await wait(1200);
+            captionElement.textContent = '…puis on garde Ctrl enfoncée avec l’autre main…';
+            key.classList.add('down');
+            await wait(1600);
+            captionElement.textContent = '…et chaque clic ajoute un fichier à la sélection.';
+            await moveToEl(files[2]);
+            await press('left');
+            files[2].classList.add('demo-selected');
+            await wait(1600);
+            key.classList.remove('down');
+            files.forEach((f) => f.classList.remove('demo-selected'));
+            setMouse('drag');
+            captionElement.textContent = 'Autre méthode : appuyez dans le vide et tracez un rectangle autour des fichiers.';
+            await moveTo(25, 30);
+            await press('left', true);
+            const lasso = put('', 25, 30, 'demo-lasso');
+            lasso.style.width = '0px';
+            lasso.style.height = '0px';
+            await wait(300);
+            lasso.style.width = '290px';
+            lasso.style.height = '85px';
+            await moveTo(315, 115);
+            files.forEach((f) => f.classList.add('demo-selected'));
+            release('left');
+            lasso.remove();
+            await caption('Tous les fichiers dans le rectangle sont sélectionnés.', 2400);
+        },
+
         async melange() {
             const targets = [file(90, 80), file(200, 150), file(290, 70)];
             await caption('Dans le Grand défi, les boutons changent à chaque fichier.', 2400);
