@@ -15,6 +15,14 @@ Même charte graphique que [OCN-mouse-campus](https://github.com/le-campus-numer
 | Glisser-déposer | Ranger le fichier dans le dossier | Trier dans trois dossiers | Le labyrinthe de OCN-mouse-campus |
 | Grand défi | Clics gauche, droit et central mélangés | Cases plus petites, icônes leurres | Contre la montre |
 
+## Le chemin de progression et les badges
+
+Le menu est un **chemin** : les ateliers s'ouvrent dans l'ordre conseillé (clic gauche, clic droit, double-clic, bouton central, molette, glisser-déposer, Grand défi). Un atelier s'ouvre quand le précédent a ★★ au niveau 1. La mention « ▶ Vous êtes ici » indique l'étape à faire.
+
+Réussir le **niveau 3** d'un atelier avec ★★ rapporte son **badge** 🏅. Avec les 7 badges, on obtient le diplôme « Bravo, vous maîtrisez la souris ! ». Sans bouton central, cet atelier est considéré comme franchi et son badge n'est pas demandé.
+
+## Les démonstrations
+
 La première fois qu'on ouvre un atelier, une **démonstration animée** montre le geste : la flèche se déplace à l'écran et le bouton de la souris dessinée s'enfonce au bon moment. Le bouton « ▶ Revoir la démo » la rejoue pendant une partie.
 
 À chaque consigne, un dessin de souris montre en vert le bouton à utiliser. On gagne de 1 à 3 étoiles selon le nombre d'erreurs. Avec ★★ ou plus, le niveau suivant se débloque. Les étoiles sont gardées dans le navigateur.
@@ -36,7 +44,7 @@ Ouvrez `index.html?test` : un robot joue chaque niveau de chaque atelier en acc�
 ## Organisation du code
 
 - `js/core.js` : menu, niveaux, déroulement d'une partie, score, étoiles, dessin de la souris.
-- `js/ateliers/*.js` : un fichier par atelier, qui s'enregistre avec `MouseGame.register({ id, order, title, text, hint, levels, start })`. Chaque niveau est un objet de réglages (`{ name, rounds, ... }`) passé à `start(api, level)`.
+- `js/ateliers/*.js` : un fichier par atelier, qui s'enregistre avec `MouseGame.register({ id, order, title, text, hint, badge, levels, start })`. `order` fixe sa place sur le chemin. Chaque niveau est un objet de réglages (`{ name, rounds, ... }`) passé à `start(api, level)`.
 - `js/demo.js` : les démonstrations animées, une scène par atelier (clé = `id` de l'atelier).
 - `js/tests.js` : les tests automatiques.
 

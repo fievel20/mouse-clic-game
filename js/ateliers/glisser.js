@@ -277,7 +277,7 @@
     }
 
     MouseGame.register({
-        id: 'glisser', order: 50, title: 'Glisser-déposer', hint: 'drag',
+        id: 'glisser', order: 50, title: 'Glisser-déposer', hint: 'drag', badge: 'Expert du rangement',
         text: 'Attrapez le fichier et lâchez-le dans le dossier.',
         levels: [
             { name: 'Ranger le fichier dans le dossier', rounds: 10, kinds: ['doc'] },

@@ -124,7 +124,7 @@
     }
 
     MouseGame.register({
-        id: 'double', order: 25, title: 'Double-clic', hint: 'double',
+        id: 'double', order: 25, title: 'Double-clic', hint: 'double', badge: 'Ouvreur de dossiers',
         text: 'Ouvrez le dossier avec deux clics rapides.',
         levels: [
             { name: 'Deux clics en moins de 0,8 seconde', rounds: 10, delay: 800 },

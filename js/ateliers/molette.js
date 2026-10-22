@@ -184,7 +184,7 @@
     }
 
     MouseGame.register({
-        id: 'molette', order: 40, title: 'Molette', hint: 'wheel-down',
+        id: 'molette', order: 40, title: 'Molette', hint: 'wheel-down', badge: 'Roi du défilement',
         text: 'Faites tourner la molette pour faire défiler.',
         levels: [
             { name: 'Déplacer le fichier cran par cran', rounds: 10 },
