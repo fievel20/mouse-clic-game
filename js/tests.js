@@ -255,48 +255,65 @@
         log(errors === 0 && !problems.length, `${name} : ${errors} erreur(s)${problems.length ? ', ' + problems.join(', ') : ''}`);
     }
 
+    // Les vérifications du chemin se calculent à partir des ateliers enregistrés :
+    // ajouter un atelier ne demande pas de les modifier
+    const activities = () => MouseGame.activities;
+
     // Chemin de progression : au départ, seul le premier atelier est ouvert
     function checkStartOfPath() {
         MouseGame.showMenu();
+        const total = activities().length;
+        const first = activities()[0].title;
         const locked = $$('.path .card.locked').length;
         const here = $('.path .card.here .card-title');
-        log(locked === MouseGame.activities.length - 1 && here && here.textContent === 'Survol'
-            && $('.badges-title').textContent.includes('0 / 10'), 'Chemin : au départ, seul « Survol » est ouvert');
+        log(locked === total - 1 && here && here.textContent === first
+            && $('.badges-title').textContent.includes(`0 / ${total}`), `Chemin : au départ, seul « ${first} » est ouvert`);
     }
 
-    // Progression d'avant l'atelier Survol : les ateliers déjà commencés restent ouverts
+    // Ateliers déjà commencés (progression d'avant un nouvel atelier) : ils restent ouverts
     function checkExistingProgress() {
+        const started = ['gauche', 'droit', 'double'];
         MouseGame.resetProgress();
         try {
             localStorage.setItem('test.mouseClicGame.stars', JSON.stringify({ 'gauche.1': 3, 'droit.1': 3, 'double.1': 2 }));
         } catch (e) { /* stockage indisponible */ }
         MouseGame.showMenu();
+        const expected = activities().filter((a, i) => i === 0 || started.includes(a.id)).map((a) => a.title);
         const open = $$('.path .card:not(.locked) .card-title').map((t) => t.textContent);
         const here = $('.path .card.here .card-title');
-        log(open.join(',') === 'Survol,Clic gauche,Clic droit,Double-clic' && here && here.textContent === 'Survol',
-            'Progression existante : les ateliers commencés restent ouverts, « Survol » est proposé');
+        log(open.join(',') === expected.join(',') && here && here.textContent === expected[0],
+            `Progression existante : les ateliers commencés restent ouverts, « ${expected[0]} » est proposé`);
         MouseGame.resetProgress();
     }
 
-    // Après tous les niveaux : 7 badges, diplôme, plus aucun atelier verrouillé
+    // Après tous les niveaux : tous les badges, diplôme, plus aucun atelier verrouillé, chemin tout vert
     function checkEndOfPath() {
         MouseGame.showMenu();
-        log($('.badges-title').textContent.includes('10 / 10') && $('#badges .diploma') && !$('.path .card.locked')
-            && $$('.path .card-badge').length === 10 && $$('.connector.done').length === 8 && $('.turn.done'),
-        'Chemin : 10 badges sur 10, diplôme et chemin entièrement vert');
+        const total = activities().length;
+        // Une liaison entre deux cartes d'une même ligne de 5 ; un virage entre deux lignes
+        const links = total - Math.ceil(total / 5);
+        log($('.badges-title').textContent.includes(`${total} / ${total}`) && $('#badges .diploma') && !$('.path .card.locked')
+            && $$('.path .card-badge').length === total && $$('.connector.done').length === links
+            && $$('.turn').every((turn) => turn.classList.contains('done')),
+        `Chemin : ${total} badges sur ${total}, diplôme et chemin entièrement vert`);
     }
 
     // Sans bouton central : l'atelier est franchi, et son badge n'est plus demandé
     function checkWithoutMiddle() {
+        const centralIndex = activities().findIndex((a) => a.id === 'central');
+        const before = {};
+        activities().slice(0, centralIndex).forEach((a) => { before[`${a.id}.1`] = 3; });
         MouseGame.resetProgress();
         try {
-            localStorage.setItem('test.mouseClicGame.stars', JSON.stringify({ 'survol.1': 3, 'gauche.1': 3, 'droit.1': 3, 'double.1': 3 }));
+            localStorage.setItem('test.mouseClicGame.stars', JSON.stringify(before));
             localStorage.setItem('test.mouseClicGame.settings', JSON.stringify({ noMiddle: true }));
         } catch (e) { /* stockage indisponible */ }
         MouseGame.showMenu();
+        const next = activities()[centralIndex + 1].title;
         const here = $('.path .card.here .card-title');
-        log(here && here.textContent === 'Molette' && $('.badges-title').textContent.includes('0 / 9'),
-            'Chemin sans bouton central : « Molette » s’ouvre et il reste 9 badges');
+        const remaining = activities().length - 1;
+        log(here && here.textContent === next && $('.badges-title').textContent.includes(`0 / ${remaining}`),
+            `Chemin sans bouton central : « ${next} » s’ouvre et il reste ${remaining} badges`);
     }
 
     // Scénarios d'erreur : on vérifie que le jeu compte bien les erreurs

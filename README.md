@@ -52,3 +52,7 @@ Ouvrez `index.html?test` : un robot joue chaque niveau de chaque atelier en acc�
 - `js/tests.js` : les tests automatiques.
 
 Pour ajouter un atelier : créer son fichier dans `js/ateliers/`, l'ajouter dans `index.html`, écrire sa scène dans `js/demo.js`, puis apprendre au robot de `js/tests.js` à y jouer. Les scripts sont classiques, sans modules, pour que `index.html` s'ouvre aussi sans serveur.
+
+## Documentation développeur
+
+Tout le détail est dans [docs/](docs/README.md) : [architecture](docs/architecture.md), [référence de l'API](docs/reference-api.md), [ajouter un atelier](docs/ajouter-un-atelier.md) (avec un exemple complet), [tests](docs/tests.md), [lancer et déployer](docs/deploiement.md) et [charte graphique](docs/charte-graphique.md).
