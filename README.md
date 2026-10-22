@@ -26,6 +26,12 @@ Le menu est un **chemin** : les ateliers s'ouvrent dans l'ordre conseillé (surv
 
 Réussir le **niveau 3** d'un atelier avec ★★ rapporte son **badge** 🏅. Avec les 12 badges, on obtient le diplôme « Bravo, vous maîtrisez la souris ! ». Sans bouton central, cet atelier est considéré comme franchi et son badge n'est pas demandé.
 
+## Le mode libre
+
+Quand **tous les niveaux de tous les ateliers** sont terminés, un bouton « 🎲 Mode libre » apparaît dans le menu, à côté des badges. Avant cela, il n'est pas visible.
+
+Le mode libre tire au hasard un exercice parmi tous les niveaux de tous les ateliers, puis un autre, **sans fin**. Une manche par exercice, ou la mission entière pour « Ranger le bureau ». Le compteur affiche les réussites, la **série** en cours (réussites d'affilée sans erreur) et le **record**, qui est enregistré. On en sort par le bouton « Menu ».
+
 ## Les démonstrations
 
 La première fois qu'on ouvre un atelier, une **démonstration animée** montre le geste : la flèche se déplace à l'écran et le bouton de la souris dessinée s'enfonce au bon moment. Le bouton « ▶ Revoir la démo » la rejoue pendant une partie.

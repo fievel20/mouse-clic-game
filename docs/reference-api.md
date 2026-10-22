@@ -43,7 +43,7 @@ MouseGame.register({
 | `setHint(partie)` | Change le dessin de souris à côté de la consigne. |
 | `success(next, delay = 700)` | Compte une réussite. Après `delay` ms, appelle `next()`, ou termine la partie si `level.rounds` est atteint. Bloquez les gestes entre-temps, sinon une même manche peut compter deux fois. |
 | `error()` | Compte une erreur. Les étoiles dépendent du nombre d'erreurs. |
-| `round` | Nombre de réussites déjà comptées, en lecture seule. Utile pour faire évoluer la difficulté pendant un niveau. |
+| `round` | Nombre de réussites déjà comptées, en lecture seule. Utile pour faire évoluer la difficulté pendant un niveau. En mode libre, il repart de 0 à chaque exercice. |
 | `later(fn, ms)` | Comme `setTimeout`, mais annulé si la partie s'arrête, et accéléré en mode test. **À utiliser à la place de `setTimeout`.** |
 | `onCleanup(fn)` | Enregistre une fonction appelée à l'arrêt de la partie : retour au menu, nouvelle partie ou démo. |
 | `randomInt(max)` | Entier aléatoire entre `0` et `max - 1`. |
@@ -137,6 +137,7 @@ Ce qui est accessible hors du noyau :
 | `register(atelier)` | ateliers | Enregistre un atelier. |
 | `start()` | `index.html` | Affiche le menu. |
 | `startActivity(atelier, niveau)` | tests | Lance un niveau directement, sans vérifier qu'il est ouvert. |
+| `startFreeMode()`, `isFreeUnlocked()` | menu, tests | Lance le mode libre ; indique s'il est débloqué. |
 | `showMenu()` | tests | Revient au menu. |
 | `activities` | tests | Ateliers enregistrés, triés par `order`. |
 | `mouseSvg(partie)` | demo.js | Code SVG d'un dessin de souris. |

@@ -139,7 +139,7 @@
         const scroll = Number(view.dataset.scroll);
         if (top >= scroll && top + 40 <= scroll + 320) {
             press(row, 0);
-        } else if (/Niveau 2/.test($('#gameTitle').textContent)) {
+        } else if ($('#board').dataset.level === '2') {
             press(view.querySelector(top > scroll ? '.sb-arrow.down' : '.sb-arrow.up'), 0);
         } else {
             dragThumbTo(view, top - 140);
@@ -281,7 +281,8 @@
             selectWanted();
             return;
         }
-        if ($('#gameTitle').textContent.startsWith('Survol')) {
+        // L'atelier se lit sur le plateau : en mode libre, le titre ne le donne pas
+        if ($('#board').dataset.activity === 'survol') {
             const [first, second] = quoted();
             if ($('.hover-desk')) {
                 // Sous-menu : survoler le parent, puis cliquer dans le sous-menu une fois ouvert
@@ -389,6 +390,7 @@
         // Dernier niveau réussi : badge gagné
         if (isLastLevel && !detail.includes('Nouveau badge')) problems.push('badge non annoncé');
         if (isLastLevel && isLastActivity && !detail.includes('Tous les badges')) problems.push('diplôme non annoncé');
+        if (isLastLevel && isLastActivity && !detail.includes('mode libre est débloqué')) problems.push('mode libre non annoncé');
         log(errors === 0 && !problems.length, `${name} : ${errors} erreur(s)${problems.length ? ', ' + problems.join(', ') : ''}`);
     }
 
@@ -405,6 +407,29 @@
         const here = $('.path .card.here .card-title');
         log(locked === total - 1 && here && here.textContent === first
             && $('.badges-title').textContent.includes(`0 / ${total}`), `Chemin : au départ, seul « ${first} » est ouvert`);
+        log(!$('#freeButton'), 'Mode libre : invisible tant que tous les niveaux ne sont pas terminés');
+    }
+
+    // Mode libre : des exercices tirés au hasard s'enchaînent sans fin
+    async function checkFreeMode() {
+        MouseGame.showMenu();
+        const button = $('#freeButton');
+        log(Boolean(button), 'Mode libre : le bouton apparaît quand tous les niveaux sont terminés');
+        if (!button) return;
+        button.click();
+        const played = new Set();
+        const deadline = Date.now() + 40000;
+        const total = () => Number(($('#score').textContent.match(/Réussites : (\d+)/) || [0, 0])[1]);
+        while (total() < 25 && !finished() && Date.now() < deadline) {
+            played.add($('#board').dataset.activity);
+            step();
+            await wait(50);
+        }
+        log(total() >= 25 && !finished() && errorsCount() === 0 && /Mode libre/.test($('#gameTitle').textContent)
+            && /Record : (\d+)/.test($('#score').textContent) && Number($('#score').textContent.match(/Record : (\d+)/)[1]) >= 25,
+        `Mode libre : ${total()} réussites d’affilée, sans fin de partie, record enregistré`);
+        log(played.size >= 5, `Mode libre : ${played.size} ateliers différents tirés au hasard`);
+        MouseGame.showMenu();
     }
 
     // Ateliers déjà commencés (progression d'avant un nouvel atelier) : ils restent ouverts
@@ -609,6 +634,7 @@
             }
         }
         checkEndOfPath();
+        await checkFreeMode();
         checkWithoutMiddle();
         checkExistingProgress();
         await scenarios();

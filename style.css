@@ -188,9 +188,10 @@ h2 {
     gap: 6px;
 }
 
+/* 34 px : les 12 médailles, le diplôme et le bouton du mode libre tiennent sur une ligne */
 .medal {
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -201,7 +202,7 @@ h2 {
 }
 
 .medal .mouse-svg {
-    width: 20px !important;
+    width: 17px !important;
     height: auto;
     opacity: 0.35;
 }
@@ -218,6 +219,24 @@ h2 {
 .diploma {
     font-weight: bold;
     color: #4caf50;
+}
+
+/* Bouton du mode libre, affiché seulement quand tous les niveaux sont terminés */
+.free-button {
+    padding: 8px 16px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.free-button:hover {
+    background-color: #43a047;
 }
 
 /* Nouveau badge annoncé en fin de partie */

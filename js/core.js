@@ -56,6 +56,7 @@ window.MouseGame = (() => {
     let timerInterval = null;
     let runId = 0;           // invalide les minuteries d'une partie abandonnée
     let cleanups = [];       // nettoyages propres à l'atelier en cours
+    let freeMode = null;     // en mode libre : { total, streak } (réussites, série sans erreur)
 
     // ---------- Outils ----------
 
@@ -149,6 +150,18 @@ window.MouseGame = (() => {
         return badgeActivities().every(hasBadge);
     }
 
+    // ---------- Mode libre ----------
+
+    // Ateliers du mode libre : tous, sauf le bouton central pour qui n'en a pas
+    function freeActivities() {
+        return activities.filter((a) => !(a.id === 'central' && getSetting('noMiddle')));
+    }
+
+    // Le mode libre s'ouvre quand tous les niveaux de tous les ateliers ont été terminés
+    function isFreeUnlocked() {
+        return freeActivities().every((a) => a.levels.every((_, i) => getStars(a.id, i + 1) > 0));
+    }
+
     // « Vous êtes ici » : le premier atelier pas encore franchi, sinon le premier sans badge
     function currentStep() {
         return activities.find((a) => isActivityUnlocked(a) && !isPassed(a))
@@ -214,7 +227,9 @@ window.MouseGame = (() => {
     }
 
     function updateStats() {
-        scoreElement.textContent = `Réussites : ${round} / ${level.rounds}`;
+        scoreElement.textContent = freeMode
+            ? `Réussites : ${freeMode.total} · Série : ${freeMode.streak} · Record : ${getSetting('freeRecord') || 0}`
+            : `Réussites : ${round} / ${level.rounds}`;
         errorsElement.textContent = `Erreurs : ${errors}`;
     }
 
@@ -233,9 +248,13 @@ window.MouseGame = (() => {
             const title = hasBadge(a) ? `Badge « ${a.badge} »` : `Badge « ${a.badge} » : réussissez le niveau 3 de « ${a.title} » avec ★★`;
             return `<span class="medal${hasBadge(a) ? ' earned' : ''}" title="${title}">${mouseSvg(a.hint)}</span>`;
         }).join('');
+        const free = isFreeUnlocked();
         badgesElement.innerHTML = `<span class="badges-title">🏅 Mes badges : ${earned} / ${list.length}</span>
             <span class="medals">${medals}</span>`
-            + (allBadges() ? '<span class="diploma">🎓 Bravo, vous maîtrisez la souris !</span>' : '');
+            + (allBadges() ? `<span class="diploma">${free ? '🎓 Diplôme !' : '🎓 Bravo, vous maîtrisez la souris !'}</span>` : '')
+            // Le mode libre n'apparaît qu'une fois tous les niveaux terminés
+            + (free ? '<button class="free-button" id="freeButton" title="Des exercices tirés au hasard, sans fin">🎲 Mode libre</button>' : '');
+        if (free) document.getElementById('freeButton').addEventListener('click', startFreeMode);
     }
 
     function makeCard(activity, index, here) {
@@ -314,6 +333,7 @@ window.MouseGame = (() => {
 
     function showMenu() {
         stopActivity();
+        freeMode = null;
         resultModal.style.display = 'none';
         game.classList.add('hidden');
         menu.classList.remove('hidden');
@@ -324,6 +344,7 @@ window.MouseGame = (() => {
 
     function startActivity(activity, number = 1) {
         stopActivity();
+        freeMode = null;
         current = activity;
         level = Object.assign({ number }, activity.levels[number - 1]);
         round = 0;
@@ -336,6 +357,7 @@ window.MouseGame = (() => {
         const middleAlreadySkipped = activity.id !== 'central' && getSetting('noMiddle');
         skipMiddleButton.classList.toggle('hidden', !activity.usesMiddle || middleAlreadySkipped);
         board.innerHTML = '';
+        markBoard();
         updateStats();
         // Première visite de l'atelier : on montre d'abord la démonstration
         const seen = getSetting('demosSeen') || {};
@@ -351,10 +373,60 @@ window.MouseGame = (() => {
         activity.start(api, level);
     }
 
+    // Atelier et niveau en cours, lisibles dans la page (utile aux tests, surtout en mode libre)
+    function markBoard() {
+        board.dataset.activity = current.id;
+        board.dataset.level = level.number;
+    }
+
+    // ---------- Mode libre : des exercices tirés au hasard, sans fin ----------
+
+    function startFreeMode() {
+        stopActivity();
+        freeMode = { total: 0, streak: 0 };
+        errors = 0;
+        resultModal.style.display = 'none';
+        menu.classList.add('hidden');
+        game.classList.remove('hidden');
+        gameTitle.textContent = '🎲 Mode libre';
+        skipMiddleButton.classList.add('hidden');
+        startTime = Date.now();
+        timerElement.textContent = 'Temps : 00:00';
+        timerInterval = setInterval(() => {
+            timerElement.textContent = 'Temps : ' + formatTime(Math.floor((Date.now() - startTime) / 1000));
+        }, 1000);
+        nextFreeExercise();
+    }
+
+    // Tire un niveau au hasard parmi tous ceux des ateliers, jamais deux fois de suite le même atelier
+    function nextFreeExercise() {
+        const pool = freeActivities().filter((a) => a !== current || freeActivities().length === 1);
+        const activity = pool[randomInt(pool.length)];
+        playFreeExercise(activity, 1 + randomInt(activity.levels.length));
+    }
+
+    // Une manche d'un niveau (une mission entière pour « Ranger le bureau » : ses tâches s'enchaînent)
+    function playFreeExercise(activity, number) {
+        stopExercise();
+        current = activity;
+        level = Object.assign({ number }, activity.levels[number - 1], { rounds: 1 });
+        round = 0;
+        levelText.textContent = `Exercice tiré au hasard : ${activity.title}, niveau ${number}`;
+        board.innerHTML = '';
+        markBoard();
+        updateStats();
+        activity.start(api, level);
+    }
+
     // Démonstration animée de l'atelier en cours (js/demo.js), puis onDone()
     function showDemo(onDone) {
-        stopActivity();
-        timerElement.textContent = 'Temps : 00:00';
+        if (freeMode) {
+            // En mode libre, le chronomètre continue pendant la démo
+            stopExercise();
+        } else {
+            stopActivity();
+            timerElement.textContent = 'Temps : 00:00';
+        }
         const activity = current;
         MouseDemo.play(activity, () => {
             const seen = getSetting('demosSeen') || {};
@@ -364,21 +436,35 @@ window.MouseGame = (() => {
         });
     }
 
-    function stopActivity() {
+    // Arrête l'exercice en cours (minuteries, écouteurs), sans toucher au chronomètre
+    function stopExercise() {
         runId++;
-        clearInterval(timerInterval);
         cleanups.forEach((fn) => fn());
         cleanups = [];
     }
 
+    function stopActivity() {
+        stopExercise();
+        clearInterval(timerInterval);
+    }
+
     function success(next, delay = 700) {
         round++;
+        if (freeMode) {
+            freeMode.total++;
+            freeMode.streak++;
+            if (freeMode.streak > (getSetting('freeRecord') || 0)) setSetting('freeRecord', freeMode.streak);
+            updateStats();
+            later(round >= level.rounds ? nextFreeExercise : next, delay);
+            return;
+        }
         updateStats();
         later(round >= level.rounds ? endActivity : next, delay);
     }
 
     function error() {
         errors++;
+        if (freeMode) freeMode.streak = 0;
         updateStats();
     }
 
@@ -392,6 +478,7 @@ window.MouseGame = (() => {
         const nextActivityWasLocked = nextActivity && !isActivityUnlocked(nextActivity);
         const hadBadge = hasBadge(current);
         const hadAllBadges = allBadges();
+        const hadFree = isFreeUnlocked();
         saveStars(current.id, level.number, stars);
         if (current.id === 'central') setSetting('noMiddle', false);
         const nextOpen = hasNext && isUnlocked(current, level.number + 1);
@@ -421,6 +508,9 @@ window.MouseGame = (() => {
         }
         if (!hadAllBadges && allBadges()) {
             detail += '<div class="diploma">🎓 Tous les badges ! Bravo, vous maîtrisez la souris !</div>';
+        }
+        if (!hadFree && isFreeUnlocked()) {
+            detail += '<div class="diploma">🎲 Tous les niveaux sont terminés : le mode libre est débloqué, dans le menu !</div>';
         }
         resultDetailElement.innerHTML = detail;
         nextLevelButton.classList.toggle('hidden', !nextOpen);
@@ -458,7 +548,8 @@ window.MouseGame = (() => {
     document.getElementById('demoButton').addEventListener('click', () => {
         // La manche en cours est recommencée après la démonstration
         const number = level.number;
-        showDemo(() => startActivity(current, number));
+        const activity = current;
+        showDemo(() => (freeMode ? playFreeExercise(activity, number) : startActivity(activity, number)));
     });
     skipMiddleButton.addEventListener('click', () => {
         setSetting('noMiddle', true);
@@ -485,6 +576,8 @@ window.MouseGame = (() => {
         activities,
         mouseSvg,
         startActivity,
+        startFreeMode,
+        isFreeUnlocked,
         showMenu,
         resetProgress() {
             try {

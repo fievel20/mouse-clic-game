@@ -34,7 +34,7 @@ Attention : les seuils comparés au temps réel, comme le délai maximum entre l
    - « nouvel atelier sur le chemin », après le niveau 1 (sauf pour le dernier atelier) ;
    - « nouveau badge », après le dernier niveau ;
    - « tous les badges » (le diplôme), après le tout dernier niveau.
-3. **Le chemin** : à la fin (tous les badges, chemin tout vert), sans bouton central, et avec une progression existante (les ateliers commencés restent ouverts).
+3. **Le chemin** : à la fin (tous les badges, chemin tout vert), sans bouton central, et avec une progression existante (les ateliers commencés restent ouverts). Le **mode libre** est vérifié aussi : invisible au départ, débloqué à la fin, puis 25 réussites d'affilée dans au moins 5 ateliers différents, sans que la partie se termine.
 4. **Les scénarios d'erreur** : un mauvais geste par atelier, pour vérifier qu'il compte une erreur, ou au contraire qu'un geste refusé n'en compte pas.
 5. **Les démonstrations** : chaque scène se joue jusqu'au bout, et « Revoir la démo » relance bien la partie.
 
