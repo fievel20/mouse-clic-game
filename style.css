@@ -523,6 +523,82 @@ h2 {
     color: #fff;
 }
 
+/* Bulle d'aide (survol) */
+.tooltip {
+    position: absolute;
+    transform: translateX(-50%);
+    z-index: 5;
+    padding: 4px 10px;
+    font-size: 14px;
+    white-space: nowrap;
+    color: #fff;
+    background-color: #333;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    animation: tooltip-in 0.2s ease-out;
+}
+
+@keyframes tooltip-in {
+    from { opacity: 0; }
+}
+
+/* Menu du bureau avec sous-menus (survol, niveau 2) */
+.hover-desk {
+    position: relative;
+    width: 600px;
+    height: 300px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.desk-menu {
+    position: absolute;
+    left: 60px;
+    top: 40px;
+    width: 190px;
+}
+
+.desk-menu,
+.desk-sub {
+    padding: 6px 0;
+    font-size: 17px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.desk-item,
+.desk-sub-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px;
+    cursor: default;
+}
+
+.desk-item:hover,
+.desk-item.open,
+.desk-sub-item:hover {
+    background-color: #f4f4f9;
+}
+
+.desk-sub {
+    position: absolute;
+    width: 180px;
+    z-index: 2;
+}
+
+.desk-item.error,
+.desk-sub-item.error {
+    color: #fff;
+}
+
+.desk-sub-item.success {
+    color: #fff;
+}
+
 /* Faux navigateur (bouton central, niveau 3) */
 .browser {
     width: 600px;
@@ -825,6 +901,19 @@ h2 {
 
 .demo-menu div {
     padding: 4px 14px;
+}
+
+.demo-menu .hovered {
+    background-color: #f4f4f9;
+}
+
+.demo-tooltip {
+    z-index: 5;
+    padding: 4px 10px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #333;
+    border-radius: 4px;
 }
 
 .demo-menu .chosen {
