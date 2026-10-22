@@ -1,0 +1,368 @@
+/* Charte reprise de OCN-mouse-campus :
+   fond #f4f4f9, texte #333, cases blanches ombrées, murs #808080,
+   succès #4caf50, erreur #ff4c4c, icônes au trait noir. */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    user-select: none;
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    font-size: 36px;
+    margin: 0 0 8px;
+}
+
+h2 {
+    font-size: 26px;
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 20px;
+    margin: 0 0 30px;
+}
+
+/* ---------- Menu ---------- */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 220px);
+    gap: 20px;
+    justify-content: center;
+}
+
+.card {
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    border: none;
+    padding: 20px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.1s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card .card-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.card .card-text {
+    font-size: 15px;
+    min-height: 36px;
+}
+
+.card .stars {
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: #c8c8c8;
+}
+
+.card .stars .on {
+    color: #f5b301;
+}
+
+.link-button {
+    margin-top: 30px;
+    background: none;
+    border: none;
+    color: #808080;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* ---------- Dessin de souris ---------- */
+.mouse-svg {
+    width: 60px;
+    height: 84px;
+}
+
+.mouse-svg .part {
+    fill: #ffffff;
+    stroke: #000;
+    stroke-width: 3;
+}
+
+.mouse-svg .part.active {
+    fill: #4caf50;
+}
+
+.mouse-svg .arrow {
+    fill: #4caf50;
+}
+
+/* ---------- Écran de jeu ---------- */
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.back-button {
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.instruction {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 90px;
+    margin-bottom: 15px;
+}
+
+.message {
+    font-size: 22px;
+    width: 460px;
+    text-align: left;
+}
+
+.message.bad {
+    color: #ff4c4c;
+}
+
+.message.good {
+    color: #4caf50;
+}
+
+.board {
+    position: relative;
+    margin: 0 auto 20px;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 20px;
+}
+
+/* Grille de cases, comme le labyrinthe d'origine */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 60px);
+    grid-template-rows: repeat(var(--rows), 60px);
+    gap: 5px;
+}
+
+.cell {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.cell.wall {
+    background-color: #808080;
+}
+
+.cell.target {
+    cursor: pointer;
+    outline: 3px dashed #333;
+    outline-offset: -6px;
+}
+
+.cell.goal {
+    outline: 3px dashed #4caf50;
+    outline-offset: -6px;
+}
+
+.icon {
+    width: 44px;
+    height: 44px;
+    pointer-events: none;
+}
+
+.error {
+    background-color: #ff4c4c !important;
+}
+
+.success {
+    background-color: #4caf50 !important;
+}
+
+/* Petit menu contextuel (clic droit) */
+.context-menu {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    padding: 6px 0;
+    text-align: left;
+    font-size: 16px;
+    z-index: 5;
+    min-width: 150px;
+}
+
+.context-menu div {
+    padding: 6px 16px;
+}
+
+/* Molette : colonne + flèches */
+.wheel-layout {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.wheel-layout .cell {
+    width: 50px;
+    height: 50px;
+}
+
+.wheel-layout .grid {
+    grid-template-columns: 50px;
+    grid-template-rows: repeat(var(--rows), 50px);
+}
+
+.wheel-help {
+    font-size: 18px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    padding: 10px 0;
+}
+
+/* Glisser-déposer : plateau libre */
+.dropzone-board {
+    width: 650px;
+    height: 390px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.piece {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.piece.draggable {
+    cursor: grab;
+    background-color: #f4f4f9;
+    z-index: 3;
+}
+
+.piece.dragging {
+    cursor: grabbing;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    transform: scale(1.08);
+}
+
+.piece.folder {
+    width: 100px;
+    height: 100px;
+    border: 3px dashed #808080;
+}
+
+.piece.folder.hover {
+    border-color: #4caf50;
+    background-color: #e8f5e9;
+}
+
+/* ---------- Fenêtre de résultat ---------- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content .result-message {
+    font-size: 30px;
+    margin-top: 0;
+}
+
+.modal-content .result-detail {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.modal-content .reset-button {
+    margin: 20px 5px 0;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content .reset-button.secondary {
+    background-color: #808080;
+}
+
+@media (max-width: 760px) {
+    .cards {
+        grid-template-columns: repeat(2, minmax(0, 220px));
+    }
+}
