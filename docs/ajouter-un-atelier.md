@@ -32,7 +32,7 @@ Récapitulatif des étapes :
             area.appendChild(target);
             locked = false;
             game.setHint('left');
-            game.setMessage('Cliquez sur la cible avec le bouton gauche.');
+            game.setInstruction('Cliquez sur la cible avec le bouton gauche.');
         }
 
         area.addEventListener('mousedown', (e) => {
@@ -42,19 +42,19 @@ Récapitulatif des étapes :
             const target = e.target.closest('.round-target');
             if (!target) {
                 // Geste raté : un conseil, mais pas d'erreur
-                game.setMessage('Presque ! Visez bien la cible.', 'bad');
+                game.setFeedback('Presque ! Visez bien la cible.', 'bad');
                 return;
             }
             if (e.button !== 0) {
                 // Mauvais geste : une erreur, toujours expliquée
                 game.error();
-                game.setMessage('Ce n’est pas le bon bouton : utilisez le bouton gauche.', 'bad');
+                game.setFeedback('Ce n’est pas le bon bouton : utilisez le bouton gauche.', 'bad');
                 return;
             }
             // Bloque les clics jusqu'à la manche suivante, pour ne pas compter deux réussites
             locked = true;
             target.classList.add('success');
-            game.setMessage('Bravo !', 'good');
+            game.setFeedback('Bravo !', 'good');
             game.success(nextRound);
         });
         area.addEventListener('contextmenu', (e) => e.preventDefault());

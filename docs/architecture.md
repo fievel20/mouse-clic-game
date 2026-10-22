@@ -55,7 +55,7 @@ js/tests.js             Tests automatiques, chargés seulement avec index.html?t
 | Fin de partie `#resultModal` | `#resultMessage`, `#resultDetail`, `#nextLevelButton`, `#nextActivityButton`, `#replayButton`, `#menuButton` |
 | Démonstration `#demoModal` | `#demoTitle`, `#demoScene`, `#demoMouse`, `#demoCaption`, `#demoReplay`, `#demoGo` |
 
-Un atelier ne dessine que dans **`#board`** (reçu comme `api.board`). Il change la consigne et le dessin de souris par l'API (`setMessage`, `setHint`), jamais directement.
+Un atelier ne dessine que dans **`#board`** (reçu comme `api.board`). Il change l'énoncé, le commentaire et le dessin de souris par l'API (`setInstruction`, `setFeedback`, `setHint`), jamais directement. Dans la page, l'énoncé est dans `#instruction` (en gras) et le commentaire juste en dessous, dans `#feedback`.
 
 ## Déroulement d'une partie
 
@@ -74,8 +74,9 @@ sequenceDiagram
     end
     C->>A: start(api, level)
     loop chaque manche
-        A->>C: setMessage / setHint
+        A->>C: setInstruction / setHint
         J->>A: geste de souris
+        A->>C: setFeedback (commentaire sous l'énoncé)
         A->>C: error() ou success(manche suivante)
     end
     C->>C: endActivity() : étoiles, déblocages, badges

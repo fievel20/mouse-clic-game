@@ -44,9 +44,9 @@
             accumulated = 0;
             const down = goal > position;
             game.setHint(down ? 'wheel-down' : 'wheel-up');
-            game.setMessage(down
-                ? 'Tournez la molette vers vous pour descendre le fichier jusqu’au dossier.'
-                : 'Tournez la molette vers l’écran pour monter le fichier jusqu’au dossier.');
+            // L'énoncé ne donne pas le sens : il peut changer si le fichier dépasse le dossier
+            game.setInstruction('Faites tourner la molette pour amener le fichier jusqu’au dossier.');
+            game.setFeedback(down ? 'Le dossier est en dessous : molette vers vous.' : 'Le dossier est au-dessus : molette vers l’écran.');
             draw();
         }
 
@@ -71,19 +71,19 @@
             draw();
             clearTimeout(settleTimer);
             if (position === goal) {
-                game.setMessage('Vous y êtes… ne bougez plus !', 'good');
+                game.setFeedback('Vous y êtes… ne bougez plus !', 'good');
                 // Le fichier doit rester un instant sur le dossier
                 settleTimer = game.later(() => {
                     if (position !== goal || locked) return;
                     locked = true;
                     grid.children[goal].classList.add('success');
-                    game.setMessage('Bravo !', 'good');
+                    game.setFeedback('Bravo !', 'good');
                     game.success(nextRound);
                 }, 500);
             } else {
                 const down = goal > position;
                 game.setHint(down ? 'wheel-down' : 'wheel-up');
-                game.setMessage(down ? 'Encore un peu : molette vers vous.' : 'Encore un peu : molette vers l’écran.');
+                game.setFeedback(down ? 'Encore un peu : molette vers vous.' : 'Encore un peu : molette vers l’écran.');
             }
         }
 
@@ -151,9 +151,9 @@
             locked = false;
             game.setHint('wheel');
             if (level.named) {
-                game.setMessage(`Trouvez « ${items[wanted].name} » dans la liste, puis cliquez dessus.`);
+                game.setInstruction(`Trouvez « ${items[wanted].name} » dans la liste, puis cliquez dessus.`);
             } else {
-                game.setMessage(below
+                game.setInstruction(below
                     ? 'Un dossier est caché plus bas : molette vers vous, puis cliquez sur le dossier.'
                     : 'Un dossier est caché plus haut : molette vers l’écran, puis cliquez sur le dossier.');
             }
@@ -166,14 +166,14 @@
             if (Number(row.dataset.index) === wanted) {
                 locked = true;
                 row.classList.add('success');
-                game.setMessage('Bravo, vous l’avez trouvé !', 'good');
+                game.setFeedback('Bravo, vous l’avez trouvé !', 'good');
                 game.success(nextRound, 900);
             } else {
                 game.error();
                 row.classList.add('error');
                 game.later(() => row.classList.remove('error'), 600);
-                game.setMessage(level.named
-                    ? `Ce n’est pas « ${items[wanted].name} ». Lisez bien le nom.`
+                game.setFeedback(level.named
+                    ? `Celui-ci s’appelle « ${items[Number(row.dataset.index)].name} ». Lisez bien le nom.`
                     : 'Ce n’est pas le dossier. Continuez à faire défiler.', 'bad');
             }
         });

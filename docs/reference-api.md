@@ -38,7 +38,8 @@ MouseGame.register({
 | Membre | Description |
 | --- | --- |
 | `board` | Élément `#board`, vide au départ. L'atelier y construit son plateau. Il est en `position: relative`. |
-| `setMessage(texte, genre?)` | Affiche la consigne. `genre` : `'good'` (vert), `'bad'` (rouge) ou rien (neutre). |
+| `setInstruction(texte)` | Affiche l'**énoncé** de la manche, en gras. Il reste affiché jusqu'à l'énoncé suivant. Le commentaire précédent est effacé. |
+| `setFeedback(texte, genre = 'info')` | Affiche un **commentaire** sous l'énoncé, sans l'effacer. `genre` : `'good'` (vert, réussite), `'bad'` (rouge, erreur ou geste raté) ou `'info'` (gris foncé, simple conseil). `setFeedback('')` l'efface. |
 | `setHint(partie)` | Change le dessin de souris à côté de la consigne. |
 | `success(next, delay = 700)` | Compte une réussite. Après `delay` ms, appelle `next()`, ou termine la partie si `level.rounds` est atteint. Bloquez les gestes entre-temps, sinon une même manche peut compter deux fois. |
 | `error()` | Compte une erreur. Les étoiles dépendent du nombre d'erreurs. |
@@ -54,7 +55,9 @@ MouseGame.register({
 
 ### Bonnes pratiques
 
-- **Une erreur, c'est un mauvais geste**, comme le mauvais bouton, le mauvais fichier ou un mur touché. Un geste simplement raté (clic à côté, fichier lâché dans le vide) donne un conseil par `setMessage(…, 'bad')`, sans `error()`.
+- **L'énoncé dit quoi faire, le commentaire dit comment ça s'est passé.** L'énoncé (`setInstruction`) est donné une fois par manche. Pour réagir à un geste, utilisez `setFeedback`, et ne répétez pas l'énoncé dans le commentaire, puisqu'il reste affiché juste au-dessus.
+- **L'énoncé doit rester vrai pendant toute la manche.** Si une indication peut changer en cours de manche (par exemple le sens de la molette quand le fichier dépasse le dossier), mettez-la dans le commentaire.
+- **Une erreur, c'est un mauvais geste**, comme le mauvais bouton, le mauvais fichier ou un mur touché. Un geste simplement raté (clic à côté, fichier lâché dans le vide) donne un commentaire par `setFeedback(…, 'bad')`, sans `error()`.
 - **Expliquez toujours l'erreur** dans le message : « Ce n'est pas le bon bouton : utilisez le bouton droit », plutôt que « Erreur ».
 - **Pas de cadre autour de la cible.** C'est un choix de jeu : il faut repérer soi-même le fichier ou le dossier.
 - **Empêchez les comportements du navigateur** qui gêneraient : menu contextuel (`contextmenu`), défilement automatique du bouton central (`preventDefault` sur `mousedown` quand `button === 1`).

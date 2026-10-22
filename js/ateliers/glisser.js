@@ -35,7 +35,7 @@
 
         el.addEventListener('pointerdown', (e) => {
             if (e.button !== 0) {
-                game.setMessage('Utilisez le bouton gauche pour attraper le fichier.', 'bad');
+                game.setFeedback('Utilisez le bouton gauche pour attraper le fichier.', 'bad');
                 return;
             }
             e.preventDefault();
@@ -128,7 +128,7 @@
                     const over = x === null ? null : folderUnder(x, y);
                     if (!over) {
                         moveHome();
-                        game.setMessage('Le fichier est revenu à sa place. Lâchez-le bien au-dessus du dossier.', 'bad');
+                        game.setFeedback('Le fichier est revenu à sa place. Lâchez-le bien au-dessus du dossier.', 'bad');
                         return;
                     }
                     if (over.kind !== pieceKind) {
@@ -136,17 +136,17 @@
                         over.el.classList.add('error');
                         game.later(() => over.el.classList.remove('error'), 600);
                         moveHome();
-                        game.setMessage(`Ce n’est pas le bon dossier. ${instruction()}`, 'bad');
+                        game.setFeedback(`Ce n’est pas le bon dossier : regardez son nom.`, 'bad');
                         return;
                     }
                     piece.remove();
                     over.el.classList.add('success');
-                    game.setMessage('Bravo ! Le fichier est rangé.', 'good');
+                    game.setFeedback('Bravo ! Le fichier est rangé.', 'good');
                     game.success(nextRound);
                 }
             });
             game.setHint('drag');
-            game.setMessage(instruction());
+            game.setInstruction(instruction());
         }
 
         area.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -238,7 +238,7 @@
                         game.error();
                         cell.classList.add('error');
                         game.later(() => cell.classList.remove('error'), 600);
-                        game.setMessage('Oups ! Vous avez touché un mur. Lâchez le bouton et recommencez depuis le départ.', 'bad');
+                        game.setFeedback('Oups ! Vous avez touché un mur. Lâchez le bouton et recommencez depuis le départ.', 'bad');
                         return;
                     }
                 }
@@ -257,19 +257,19 @@
                     if (!lost && cell && cell.classList.contains('goal')) {
                         cell.classList.add('success');
                         piece.remove();
-                        game.setMessage('Bravo ! Vous avez atteint le dossier.', 'good');
+                        game.setFeedback('Bravo ! Vous avez atteint le dossier.', 'good');
                         game.success(nextRound, 900);
                         return;
                     }
                     if (!lost) {
-                        game.setMessage('Le fichier est revenu au départ. Guidez-le jusqu’au dossier sans toucher les murs gris.');
+                        game.setFeedback('Le fichier est revenu au départ : lâchez-le bien sur le dossier.');
                     }
                     lost = false;
                     moveHome();
                 }
             });
             game.setHint('drag');
-            game.setMessage('Guidez le fichier jusqu’au dossier sans toucher les murs gris, puis lâchez-le.');
+            game.setInstruction('Guidez le fichier jusqu’au dossier sans toucher les murs gris, puis lâchez-le.');
         }
 
         wrap.addEventListener('contextmenu', (e) => e.preventDefault());

@@ -62,7 +62,7 @@
         }
 
         function refuse() {
-            game.setMessage(REFUSALS[level.tools[0]]);
+            game.setFeedback(REFUSALS[level.tools[0]]);
         }
 
         function firstVisible() {
@@ -93,11 +93,11 @@
             locked = false;
             game.setHint(level.tools && level.tools[0] === 'arrows' ? 'left' : 'drag');
             if (level.named) {
-                game.setMessage(`Trouvez « ${items[wanted]} » avec la barre de défilement, puis cliquez dessus.`);
+                game.setInstruction(`Trouvez « ${items[wanted]} » avec la barre de défilement, puis cliquez dessus.`);
             } else if (level.near) {
-                game.setMessage(`Le dossier est juste ${below ? 'en dessous : cliquez sur la flèche ▼' : 'au-dessus : cliquez sur la flèche ▲'} jusqu’à le voir, puis cliquez dessus.`);
+                game.setInstruction(`Le dossier est juste ${below ? 'en dessous : cliquez sur la flèche ▼' : 'au-dessus : cliquez sur la flèche ▲'} jusqu’à le voir, puis cliquez dessus.`);
             } else {
-                game.setMessage(`Un dossier est caché plus ${below ? 'bas : faites glisser l’ascenseur vers le bas' : 'haut : faites glisser l’ascenseur vers le haut'}, puis cliquez sur le dossier.`);
+                game.setInstruction(`Un dossier est caché plus ${below ? 'bas : faites glisser l’ascenseur vers le bas' : 'haut : faites glisser l’ascenseur vers le haut'}, puis cliquez sur le dossier.`);
             }
         }
 
@@ -163,14 +163,14 @@
             if (Number(row.dataset.index) === wanted) {
                 locked = true;
                 row.classList.add('success');
-                game.setMessage('Bravo, vous l’avez trouvé !', 'good');
+                game.setFeedback('Bravo, vous l’avez trouvé !', 'good');
                 game.success(nextRound, 900);
             } else {
                 game.error();
                 row.classList.add('error');
                 game.later(() => row.classList.remove('error'), 600);
-                game.setMessage(level.named
-                    ? `Ce n’est pas « ${items[wanted]} ». Lisez bien le nom.`
+                game.setFeedback(level.named
+                    ? `Celui-ci s’appelle « ${items[Number(row.dataset.index)]} ». Lisez bien le nom.`
                     : 'Ce n’est pas le dossier. Continuez à faire défiler avec la barre.', 'bad');
             }
         });
@@ -178,7 +178,7 @@
         // La molette ferait défiler sans la barre : ici, on la désactive
         const onWheel = (e) => {
             e.preventDefault();
-            game.setMessage('Ici, pas de molette : servez-vous de la barre de défilement, à droite de la liste.');
+            game.setFeedback('Ici, pas de molette : servez-vous de la barre de défilement, à droite de la liste.');
         };
         view.addEventListener('wheel', onWheel, { passive: false });
         view.addEventListener('contextmenu', (e) => e.preventDefault());

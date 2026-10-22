@@ -64,7 +64,7 @@
                 if (locked) return;
                 game.error();
                 nextTarget();
-                game.setMessage('Trop tard, le fichier a changé de place ! ' + instruction(), 'bad');
+                game.setFeedback('Trop tard, le fichier a changé de place !', 'bad');
             }, level.timeLimit);
         }
 
@@ -100,7 +100,7 @@
                     : ICONS[DECOY_ICONS[game.randomInt(DECOY_ICONS.length)]];
             }
             game.setHint(BUTTON_PARTS[expected]);
-            game.setMessage(instruction());
+            game.setInstruction(instruction());
             locked = false;
             startTimeLimit();
         }
@@ -109,7 +109,7 @@
             locked = true;
             clearTimeout(timeLimitTimer);
             cell.classList.add('success');
-            game.setMessage(text, 'good');
+            game.setFeedback(text, 'good');
             game.success(nextTarget, delay);
         }
 
@@ -129,7 +129,7 @@
                 const item = e.target.closest('[data-item]');
                 if (!item || locked) return;
                 if (e.button !== 0) {
-                    game.setMessage('Dans le menu, on choisit avec le bouton gauche.', 'bad');
+                    game.setFeedback('Dans le menu, on choisit avec le bouton gauche.', 'bad');
                     return;
                 }
                 if (item.dataset.item === action) {
@@ -139,7 +139,7 @@
                     game.error();
                     item.classList.add('wrong');
                     game.later(() => item.classList.remove('wrong'), 600);
-                    game.setMessage(`Ce n’est pas « ${item.dataset.item} » qu’il faut choisir, mais « ${action} ».`, 'bad');
+                    game.setFeedback(`Ce n’est pas « ${item.dataset.item} » qu’il faut choisir.`, 'bad');
                 }
             });
         }
@@ -150,7 +150,7 @@
             if (locked) return;
             if (contextMenu) {
                 closeMenu();
-                game.setMessage('Le menu s’est fermé. ' + instruction());
+                game.setFeedback('Le menu s’est fermé : refaites un clic droit sur le fichier.');
                 if (e.button !== 2) return;
             }
             const cell = e.target.closest('.cell');
@@ -160,9 +160,9 @@
                     game.error();
                     cell.classList.add('error');
                     game.later(() => cell.classList.remove('error'), 600);
-                    game.setMessage('Ce n’est pas le bon fichier. ' + instruction(), 'bad');
+                    game.setFeedback('Ce n’est pas le bon fichier.', 'bad');
                 } else {
-                    game.setMessage('Presque ! Visez bien, puis cliquez. ' + instruction(), 'bad');
+                    game.setFeedback('Presque ! Visez bien, puis cliquez.', 'bad');
                 }
                 return;
             }
@@ -170,13 +170,13 @@
                 game.error();
                 cell.classList.add('error');
                 game.later(() => cell.classList.remove('error'), 600);
-                game.setMessage(`Ce n'est pas le bon bouton : utilisez le bouton ${BUTTON_NAMES[expected]}.`, 'bad');
+                game.setFeedback(`Ce n'est pas le bon bouton : utilisez le bouton ${BUTTON_NAMES[expected]}.`, 'bad');
                 return;
             }
             if (level.menuAction) {
                 openMenu(cell, true);
                 game.setHint('left');
-                game.setMessage(`Le menu est ouvert : cliquez sur « ${action} » avec le bouton gauche.`, 'good');
+                game.setFeedback(`Le menu est ouvert : cliquez sur « ${action} » avec le bouton gauche.`, 'good');
                 return;
             }
             if (expected === 2) {
@@ -216,7 +216,7 @@
             } while (tabs.textContent.includes(wanted));
             locked = false;
             game.setHint('middle');
-            game.setMessage(`Ouvrez « ${wanted} » dans un nouvel onglet : bouton central sur le lien.`);
+            game.setInstruction(`Ouvrez « ${wanted} » dans un nouvel onglet : bouton central sur le lien.`);
         }
 
         browser.addEventListener('mousedown', (e) => {
@@ -225,14 +225,14 @@
             if (!link || locked) return;
             if (e.button !== 1) {
                 game.error();
-                game.setMessage(e.button === 0
+                game.setFeedback(e.button === 0
                     ? 'Le clic gauche remplacerait cette page. Le bouton central ouvre le lien à côté, dans un nouvel onglet.'
                     : 'Ce n’est pas le bon bouton : appuyez sur la molette (bouton central).', 'bad');
                 return;
             }
             if (link.dataset.name !== wanted) {
                 game.error();
-                game.setMessage(`Ce n’est pas le bon lien : cherchez « ${wanted} ».`, 'bad');
+                game.setFeedback(`Ce n’est pas le bon lien : vous avez visé « ${link.dataset.name} ».`, 'bad');
                 return;
             }
             locked = true;
@@ -242,7 +242,7 @@
             tabs.appendChild(tab);
             // Garde au plus 5 onglets visibles
             while (tabs.children.length > 5) tabs.children[1].remove();
-            game.setMessage(`Bravo ! « ${wanted} » s’est ouvert dans un nouvel onglet, en haut.`, 'good');
+            game.setFeedback(`Bravo ! « ${wanted} » s’est ouvert dans un nouvel onglet, en haut.`, 'good');
             game.success(nextRound, 1200);
         });
         browser.addEventListener('click', (e) => e.preventDefault());

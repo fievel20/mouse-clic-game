@@ -41,7 +41,7 @@
             selected.clear();
             locked = false;
             game.setHint('ctrl');
-            game.setMessage(`Sélectionnez ${listNames([...wanted].map((i) => files[i].name))} : maintenez la touche Ctrl et cliquez sur chacun.`);
+            game.setInstruction(`Sélectionnez ${listNames([...wanted].map((i) => files[i].name))} : maintenez la touche Ctrl et cliquez sur chacun.`);
         }
 
         area.addEventListener('mousedown', (e) => {
@@ -53,23 +53,23 @@
                 // Comme sous Windows : un clic dans le vide vide la sélection
                 selected.clear();
                 render();
-                game.setMessage('Un clic dans le vide enlève toute la sélection. Recommencez avec Ctrl.');
+                game.setFeedback('Un clic dans le vide enlève toute la sélection. Recommencez avec Ctrl.');
                 return;
             }
             const index = Number(item.dataset.index);
             if (withCtrl(e)) {
                 if (selected.has(index)) {
                     selected.delete(index);
-                    game.setMessage('Ctrl + clic sur un fichier déjà sélectionné l’enlève de la sélection.');
+                    game.setFeedback('Ctrl + clic sur un fichier déjà sélectionné l’enlève de la sélection.');
                 } else if (!wanted.has(index)) {
                     game.error();
                     item.classList.add('error');
                     game.later(() => item.classList.remove('error'), 600);
-                    game.setMessage(`« ${files[index].name} » n’est pas demandé.`, 'bad');
+                    game.setFeedback(`« ${files[index].name} » n’est pas demandé.`, 'bad');
                     return;
                 } else {
                     selected.add(index);
-                    game.setMessage(selected.size < wanted.size ? 'Bien ! Gardez Ctrl enfoncé pour le suivant.' : '');
+                    game.setFeedback(selected.size < wanted.size ? 'Bien ! Gardez Ctrl enfoncé pour le suivant.' : '');
                 }
             } else {
                 // Sans Ctrl, le clic remplace la sélection
@@ -78,19 +78,19 @@
                 selected.add(index);
                 if (!wanted.has(index)) {
                     game.error();
-                    game.setMessage(`« ${files[index].name} » n’est pas demandé.`, 'bad');
+                    game.setFeedback(`« ${files[index].name} » n’est pas demandé.`, 'bad');
                 } else if (lost) {
                     game.error();
-                    game.setMessage('Sans Ctrl, le clic remplace toute la sélection ! Maintenez Ctrl pour ajouter un fichier.', 'bad');
+                    game.setFeedback('Sans Ctrl, le clic remplace toute la sélection ! Maintenez Ctrl pour ajouter un fichier.', 'bad');
                 } else {
-                    game.setMessage('Premier fichier sélectionné. Maintenant, maintenez Ctrl pour ajouter les autres.');
+                    game.setFeedback('Premier fichier sélectionné. Maintenant, maintenez Ctrl pour ajouter les autres.');
                 }
             }
             render();
             if (sameSet(selected, wanted)) {
                 locked = true;
                 area.querySelectorAll('.selected').forEach((el) => el.classList.add('success'));
-                game.setMessage('Bravo, tous les fichiers sont sélectionnés !', 'good');
+                game.setFeedback('Bravo, tous les fichiers sont sélectionnés !', 'good');
                 game.success(nextRound, 1200);
             }
         });
@@ -130,7 +130,7 @@
             render();
             locked = false;
             game.setHint('shift');
-            game.setMessage(`Sélectionnez de « ${names[from]} » à « ${names[to]} » : cliquez sur le premier, puis maintenez Maj et cliquez sur le dernier.`);
+            game.setInstruction(`Sélectionnez de « ${names[from]} » à « ${names[to]} » : cliquez sur le premier, puis maintenez Maj et cliquez sur le dernier.`);
         }
 
         list.addEventListener('mousedown', (e) => {
@@ -156,15 +156,15 @@
             if (sameSet(selected, expected)) {
                 locked = true;
                 rows.forEach((r, i) => { if (selected.has(i)) r.classList.add('success'); });
-                game.setMessage('Bravo, toute la plage est sélectionnée !', 'good');
+                game.setFeedback('Bravo, toute la plage est sélectionnée !', 'good');
                 game.success(nextRound, 1200);
             } else if (e.shiftKey && anchor >= 0) {
                 game.error();
-                game.setMessage(`Ce n’est pas la bonne plage. Cliquez sur « ${names[from]} », puis Maj + clic sur « ${names[to]} ».`, 'bad');
+                game.setFeedback(`Ce n’est pas la bonne plage. Cliquez sur « ${names[from]} », puis Maj + clic sur « ${names[to]} ».`, 'bad');
             } else if (!e.shiftKey && index === from) {
-                game.setMessage(`Bien ! Maintenant, maintenez Maj et cliquez sur « ${names[to]} ».`);
+                game.setFeedback(`Bien ! Maintenant, maintenez Maj et cliquez sur « ${names[to]} ».`);
             } else if (e.shiftKey) {
-                game.setMessage(`Cliquez d’abord sur « ${names[from]} », sans Maj.`);
+                game.setFeedback(`Cliquez d’abord sur « ${names[from]} », sans Maj.`);
             }
         });
         list.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -220,7 +220,7 @@
             });
             locked = false;
             game.setHint('drag');
-            game.setMessage('Sélectionnez les 4 photos d’un coup : appuyez dans le vide, gardez le bouton enfoncé et tracez un rectangle autour d’elles.');
+            game.setInstruction('Sélectionnez les 4 photos d’un coup : appuyez dans le vide, gardez le bouton enfoncé et tracez un rectangle autour d’elles.');
         }
 
         function inside(rect) {
@@ -236,7 +236,7 @@
             if (e.button !== 0 || locked) return;
             e.preventDefault();
             if (e.target.closest('.ms-item')) {
-                game.setMessage('Commencez le rectangle dans le vide, à côté des fichiers, pas sur un fichier.');
+                game.setFeedback('Commencez le rectangle dans le vide, à côté des fichiers, pas sur un fichier.');
                 return;
             }
             const start = point(e);
@@ -275,20 +275,20 @@
             const hit = inside(r);
             items.forEach((it) => it.el.classList.toggle('selected', hit.includes(it)));
             if (e.type !== 'pointerup' || r.w < 5 || r.h < 5) {
-                game.setMessage('Gardez le bouton enfoncé en déplaçant la souris pour tracer le rectangle.');
+                game.setFeedback('Gardez le bouton enfoncé en déplaçant la souris pour tracer le rectangle.');
                 return;
             }
             const wanted = items.filter((it) => it.wanted);
             if (hit.length === wanted.length && hit.every((it) => it.wanted)) {
                 locked = true;
                 hit.forEach((it) => it.el.classList.add('success'));
-                game.setMessage('Bravo, les 4 photos sont sélectionnées d’un coup !', 'good');
+                game.setFeedback('Bravo, les 4 photos sont sélectionnées d’un coup !', 'good');
                 game.success(nextRound, 1200);
                 return;
             }
             game.error();
             const missing = wanted.filter((it) => !hit.includes(it)).length;
-            game.setMessage(missing
+            game.setFeedback(missing
                 ? `Il manque ${missing} photo${missing > 1 ? 's' : ''} : tracez un rectangle plus grand.`
                 : 'Le rectangle prend aussi d’autres fichiers : tracez-le plus près des photos.', 'bad');
         };
