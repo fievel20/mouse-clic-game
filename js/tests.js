@@ -197,6 +197,30 @@
         log(errorsCount() === 1, 'Molette niv. 3 : cliquer sur le mauvais fichier compte une erreur');
     }
 
+    // Chaque démonstration se joue jusqu'au bout, puis « C'est parti ! » rend la main
+    async function demos() {
+        const modal = $('#demoModal');
+        for (const activity of MouseGame.activities) {
+            let done = false;
+            MouseDemo.play(activity, () => { done = true; });
+            const deadline = Date.now() + 5000;
+            while (modal.dataset.state !== 'finished' && Date.now() < deadline) await wait(20);
+            const finishedDemo = modal.dataset.state === 'finished';
+            $('#demoGo').click();
+            log(finishedDemo && done && modal.style.display === 'none', `Démonstration ${activity.title}`);
+        }
+
+        // « Revoir la démo » pendant une partie : la partie recommence ensuite
+        const gauche = MouseGame.activities.find((a) => a.id === 'gauche');
+        MouseGame.startActivity(gauche, 2);
+        press($('.cell.target'), 0);
+        $('#demoButton').click();
+        const opened = modal.style.display === 'block';
+        $('#demoGo').click();
+        log(opened && /Niveau 2/.test($('#gameTitle').textContent) && $('#score').textContent.startsWith('Réussites : 0')
+            && $$('.cell.target').length === 1, 'Revoir la démo puis reprendre la partie');
+    }
+
     async function run() {
         MouseGame.resetProgress();
         for (const activity of MouseGame.activities) {
@@ -205,6 +229,7 @@
             }
         }
         await scenarios();
+        await demos();
         MouseGame.resetProgress();
         MouseGame.showMenu();
         const passed = results.filter((r) => r.ok).length;

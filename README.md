@@ -15,6 +15,8 @@ Même charte graphique que [OCN-mouse-campus](https://github.com/le-campus-numer
 | Glisser-déposer | Ranger le fichier dans le dossier | Trier dans trois dossiers | Le labyrinthe de OCN-mouse-campus |
 | Grand défi | Clics gauche, droit et central mélangés | Cases plus petites, icônes leurres | Contre la montre |
 
+La première fois qu'on ouvre un atelier, une **démonstration animée** montre le geste : la flèche se déplace à l'écran et le bouton de la souris dessinée s'enfonce au bon moment. Le bouton « ▶ Revoir la démo » la rejoue pendant une partie.
+
 À chaque consigne, un dessin de souris montre en vert le bouton à utiliser. On gagne de 1 à 3 étoiles selon le nombre d'erreurs. Avec ★★ ou plus, le niveau suivant se débloque. Les étoiles sont gardées dans le navigateur.
 
 Seul le niveau 3 du clic gauche et du Grand défi est minuté. Ailleurs, le temps est seulement affiché, pour ne pas mettre de pression.
@@ -35,6 +37,7 @@ Ouvrez `index.html?test` : un robot joue chaque niveau de chaque atelier en acc�
 
 - `js/core.js` : menu, niveaux, déroulement d'une partie, score, étoiles, dessin de la souris.
 - `js/ateliers/*.js` : un fichier par atelier, qui s'enregistre avec `MouseGame.register({ id, order, title, text, hint, levels, start })`. Chaque niveau est un objet de réglages (`{ name, rounds, ... }`) passé à `start(api, level)`.
+- `js/demo.js` : les démonstrations animées, une scène par atelier (clé = `id` de l'atelier).
 - `js/tests.js` : les tests automatiques.
 
-Pour ajouter un atelier : créer son fichier dans `js/ateliers/`, l'ajouter dans `index.html`, puis apprendre au robot de `js/tests.js` à y jouer. Les scripts sont classiques, sans modules, pour que `index.html` s'ouvre aussi sans serveur.
+Pour ajouter un atelier : créer son fichier dans `js/ateliers/`, l'ajouter dans `index.html`, écrire sa scène dans `js/demo.js`, puis apprendre au robot de `js/tests.js` à y jouer. Les scripts sont classiques, sans modules, pour que `index.html` s'ouvre aussi sans serveur.
