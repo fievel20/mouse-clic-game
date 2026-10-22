@@ -7,6 +7,7 @@ Même charte graphique que [OCN-mouse-campus](https://github.com/le-campus-numer
 
 | Atelier | Niveau 1 | Niveau 2 | Niveau 3 |
 | --- | --- | --- | --- |
+| Survol | Laisser la flèche sur le fichier pour voir sa bulle d'aide | Ouvrir un sous-menu en le survolant, puis choisir | Lire les bulles pour trouver le bon fichier parmi des fichiers identiques |
 | Clic gauche | Un grand fichier à cliquer | Cases plus petites, icônes leurres | Cliquer avant que le fichier change de place |
 | Clic droit | Ouvrir le menu du fichier | Ouvrir le menu, puis choisir l'action demandée | Trouver le bon fichier par son nom, puis choisir l'action |
 | Double-clic | Deux clics en moins de 0,8 s | Deux clics en moins de 0,5 s (comme sous Windows) | Trouver le bon dossier par son nom et l'ouvrir |
@@ -17,9 +18,9 @@ Même charte graphique que [OCN-mouse-campus](https://github.com/le-campus-numer
 
 ## Le chemin de progression et les badges
 
-Le menu est un **chemin** : les ateliers s'ouvrent dans l'ordre conseillé (clic gauche, clic droit, double-clic, bouton central, molette, glisser-déposer, Grand défi). Un atelier s'ouvre quand le précédent a ★★ au niveau 1. La mention « ▶ Vous êtes ici » indique l'étape à faire.
+Le menu est un **chemin** : les ateliers s'ouvrent dans l'ordre conseillé (survol, clic gauche, clic droit, double-clic, bouton central, molette, glisser-déposer, Grand défi). Un atelier s'ouvre quand le précédent a ★★ au niveau 1. Un atelier déjà commencé reste toujours ouvert, même si un nouvel atelier est ajouté avant lui sur le chemin. La mention « ▶ Vous êtes ici » indique l'étape à faire.
 
-Réussir le **niveau 3** d'un atelier avec ★★ rapporte son **badge** 🏅. Avec les 7 badges, on obtient le diplôme « Bravo, vous maîtrisez la souris ! ». Sans bouton central, cet atelier est considéré comme franchi et son badge n'est pas demandé.
+Réussir le **niveau 3** d'un atelier avec ★★ rapporte son **badge** 🏅. Avec les 8 badges, on obtient le diplôme « Bravo, vous maîtrisez la souris ! ». Sans bouton central, cet atelier est considéré comme franchi et son badge n'est pas demandé.
 
 ## Les démonstrations
 

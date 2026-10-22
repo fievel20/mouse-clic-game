@@ -75,7 +75,34 @@
     }
 
     // Une action du robot, selon ce qui est à l'écran
+    function hover(el) {
+        el.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+    }
+
     function step() {
+        if ($('#gameTitle').textContent.startsWith('Survol')) {
+            const [first, second] = quoted();
+            if ($('.hover-desk')) {
+                // Sous-menu : survoler le parent, puis cliquer dans le sous-menu une fois ouvert
+                const sub = $(`.desk-sub[data-parent="${first}"]`);
+                if (sub) {
+                    const item = sub.querySelector(`[data-name="${second}"]`);
+                    if (item) press(item, 0);
+                } else {
+                    const item = $(`.desk-item[data-name="${first}"]`);
+                    if (item) hover(item);
+                }
+                return;
+            }
+            const named = first && $(`.cell[data-name="${first}"]`);
+            if (named) {
+                press(named, 0);
+                return;
+            }
+            const target = $('.cell.target');
+            if (target) hover(target);
+            return;
+        }
         const interactiveMenu = $('.context-menu.interactive');
         if (interactiveMenu) {
             const wanted = quoted().pop();
@@ -169,34 +196,62 @@
         MouseGame.showMenu();
         const locked = $$('.path .card.locked').length;
         const here = $('.path .card.here .card-title');
-        log(locked === MouseGame.activities.length - 1 && here && here.textContent === 'Clic gauche'
-            && $('.badges-title').textContent.includes('0 / 7'), 'Chemin : au départ, seul « Clic gauche » est ouvert');
+        log(locked === MouseGame.activities.length - 1 && here && here.textContent === 'Survol'
+            && $('.badges-title').textContent.includes('0 / 8'), 'Chemin : au départ, seul « Survol » est ouvert');
+    }
+
+    // Progression d'avant l'atelier Survol : les ateliers déjà commencés restent ouverts
+    function checkExistingProgress() {
+        MouseGame.resetProgress();
+        try {
+            localStorage.setItem('test.mouseClicGame.stars', JSON.stringify({ 'gauche.1': 3, 'droit.1': 3, 'double.1': 2 }));
+        } catch (e) { /* stockage indisponible */ }
+        MouseGame.showMenu();
+        const open = $$('.path .card:not(.locked) .card-title').map((t) => t.textContent);
+        const here = $('.path .card.here .card-title');
+        log(open.join(',') === 'Survol,Clic gauche,Clic droit,Double-clic' && here && here.textContent === 'Survol',
+            'Progression existante : les ateliers commencés restent ouverts, « Survol » est proposé');
+        MouseGame.resetProgress();
     }
 
     // Après tous les niveaux : 7 badges, diplôme, plus aucun atelier verrouillé
     function checkEndOfPath() {
         MouseGame.showMenu();
-        log($('.badges-title').textContent.includes('7 / 7') && $('#badges .diploma') && !$('.path .card.locked')
-            && $$('.path .card-badge').length === 7 && $$('.connector.done').length === 5 && $('.turn.done'),
-        'Chemin : 7 badges sur 7, diplôme et chemin entièrement vert');
+        log($('.badges-title').textContent.includes('8 / 8') && $('#badges .diploma') && !$('.path .card.locked')
+            && $$('.path .card-badge').length === 8 && $$('.connector.done').length === 6 && $('.turn.done'),
+        'Chemin : 8 badges sur 8, diplôme et chemin entièrement vert');
     }
 
     // Sans bouton central : l'atelier est franchi, et son badge n'est plus demandé
     function checkWithoutMiddle() {
         MouseGame.resetProgress();
         try {
-            localStorage.setItem('test.mouseClicGame.stars', JSON.stringify({ 'gauche.1': 3, 'droit.1': 3, 'double.1': 3 }));
+            localStorage.setItem('test.mouseClicGame.stars', JSON.stringify({ 'survol.1': 3, 'gauche.1': 3, 'droit.1': 3, 'double.1': 3 }));
             localStorage.setItem('test.mouseClicGame.settings', JSON.stringify({ noMiddle: true }));
         } catch (e) { /* stockage indisponible */ }
         MouseGame.showMenu();
         const here = $('.path .card.here .card-title');
-        log(here && here.textContent === 'Molette' && $('.badges-title').textContent.includes('0 / 6'),
-            'Chemin sans bouton central : « Molette » s’ouvre et il reste 6 badges');
+        log(here && here.textContent === 'Molette' && $('.badges-title').textContent.includes('0 / 7'),
+            'Chemin sans bouton central : « Molette » s’ouvre et il reste 7 badges');
     }
 
     // Scénarios d'erreur : on vérifie que le jeu compte bien les erreurs
     async function scenarios() {
         const byId = (id) => MouseGame.activities.find((a) => a.id === id);
+
+        MouseGame.startActivity(byId('survol'), 1);
+        hover($('.cell.target'));
+        press($('.cell.target'), 0);
+        await wait(100);
+        log(errorsCount() === 1 && !$('.tooltip'), 'Survol : cliquer au lieu d’attendre compte une erreur, sans bulle');
+
+        MouseGame.startActivity(byId('survol'), 2);
+        const [parentName, childName] = quoted();
+        hover($(`.desk-item[data-name="${parentName}"]`));
+        await wait(100);
+        const wrongChild = $$('.desk-sub-item').find((i) => i.dataset.name !== childName);
+        press(wrongChild, 0);
+        log(errorsCount() === 1, 'Survol niv. 2 : le mauvais choix du sous-menu compte une erreur');
 
         MouseGame.startActivity(byId('gauche'), 1);
         press($('.cell.target'), 2);
@@ -270,6 +325,7 @@
         }
         checkEndOfPath();
         checkWithoutMiddle();
+        checkExistingProgress();
         await scenarios();
         await demos();
         MouseGame.resetProgress();

@@ -127,9 +127,11 @@ window.MouseGame = (() => {
         return getStars(activity.id, 1) >= STARS_TO_UNLOCK || (activity.id === 'central' && Boolean(getSetting('noMiddle')));
     }
 
-    // Les ateliers s'ouvrent dans l'ordre du chemin
+    // Les ateliers s'ouvrent dans l'ordre du chemin. Un atelier déjà commencé reste ouvert :
+    // ajouter un atelier au chemin ne bloque pas ce qu'on a déjà fait
     function isActivityUnlocked(activity) {
-        return activities.slice(0, activities.indexOf(activity)).every(isPassed);
+        return activity.levels.some((_, i) => getStars(activity.id, i + 1) > 0)
+            || activities.slice(0, activities.indexOf(activity)).every(isPassed);
     }
 
     // Badge d'un atelier : son dernier niveau réussi avec ★★
@@ -164,7 +166,7 @@ window.MouseGame = (() => {
     }
 
     // Dessin de souris, avec la partie à utiliser en vert.
-    // active : left, right, middle, wheel-up, wheel-down, wheel, drag, double, all
+    // active : left, right, middle, wheel-up, wheel-down, wheel, drag, double, move, all
     function mouseSvg(active) {
         const on = (part) => (active === part || active === 'all'
             || (part === 'middle' && active.startsWith('wheel'))
@@ -175,6 +177,8 @@ window.MouseGame = (() => {
         if (active === 'wheel') arrow = '<path class="arrow" d="M80 2 L88 14 H72 Z M80 38 L88 26 H72 Z"/>';
         if (active === 'drag') arrow = '<path class="arrow" d="M72 44 H80 V36 L90 50 L80 64 V56 H72 Z"/>';
         if (active === 'double') arrow = '<text class="arrow-text" x="80" y="26" text-anchor="middle">×2</text>';
+        // Déplacer la souris sans cliquer : flèches dans les 4 directions
+        if (active === 'move') arrow = '<path class="arrow" d="M80 6 L86 14 H74 Z M80 42 L86 34 H74 Z M70 24 L77 18 V30 Z M90 24 L83 18 V30 Z"/>';
         const viewBox = arrow ? '12 0 80 84' : '12 0 60 84';
         return `<svg class="mouse-svg" viewBox="${viewBox}" style="width:${arrow ? 80 : 60}px">
             <path class="part" d="M15 36 V54 A27 27 0 0 0 69 54 V36 Z"/>

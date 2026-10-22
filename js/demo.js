@@ -103,6 +103,29 @@ window.MouseDemo = (() => {
     // ---------- Scènes ----------
 
     const SCENES = {
+        async survol() {
+            setMouse('move');
+            const target = file(220, 80);
+            await caption('Survoler, c’est poser la flèche sur quelque chose, sans cliquer.', 2600);
+            captionElement.textContent = 'Amenez la flèche sur le fichier…';
+            await moveToEl(target);
+            captionElement.textContent = '…puis ne bougez plus et attendez un instant. Aucun bouton à appuyer !';
+            await wait(1600);
+            const tip = put('lettre.txt', 220, 128, 'demo-tooltip');
+            target.classList.add('done');
+            await caption('Une bulle d’aide apparaît : elle donne le nom du fichier.', 2600);
+            tip.remove();
+            target.remove();
+            // Le menu est placé par son coin haut gauche, comme un vrai menu
+            const menu = put('<div class="pick">Nouveau ▸</div><div>Actualiser</div><div>Propriétés</div>', 40, 50, 'demo-menu');
+            captionElement.textContent = 'Dans un menu, survoler une ligne qui finit par ▸ ouvre un sous-menu.';
+            await moveTo(100, 64);
+            await wait(700);
+            menu.querySelector('.pick').classList.add('hovered');
+            put('<div>Dossier</div><div>Raccourci</div>', 166, 50, 'demo-menu');
+            await wait(2600);
+        },
+
         async gauche() {
             setMouse('left');
             const target = file(240, 95);
