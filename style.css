@@ -427,11 +427,6 @@ h2 {
     background-color: #dcdce6;
 }
 
-.cell.goal {
-    outline: 3px dashed #4caf50;
-    outline-offset: -6px;
-}
-
 .icon {
     width: 44px;
     height: 44px;
@@ -755,14 +750,13 @@ h2 {
     transform: scale(1.08);
 }
 
+/* Pas de cadre autour des dossiers : seul le fond change quand on y amène le fichier */
 .piece.folder {
     width: 100px;
     height: 100px;
-    border: 3px dashed #808080;
 }
 
 .piece.folder.hover {
-    border-color: #4caf50;
     background-color: #e8f5e9;
 }
 
