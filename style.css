@@ -272,10 +272,9 @@ h2 {
     background-color: #808080;
 }
 
+/* Pas de cadre autour du fichier à cliquer : il faut le repérer soi-même */
 .cell.target {
     cursor: pointer;
-    outline: 3px dashed #333;
-    outline-offset: -6px;
 }
 
 /* Dossier sélectionné après un premier clic, comme sur un vrai bureau */
