@@ -77,6 +77,10 @@ h2 {
     min-height: 36px;
 }
 
+.card.skipped {
+    opacity: 0.6;
+}
+
 .card .stars {
     font-size: 22px;
     letter-spacing: 4px;
@@ -115,6 +119,17 @@ h2 {
 
 .mouse-svg .arrow {
     fill: #4caf50;
+}
+
+.mouse-svg .arrow-text {
+    fill: #4caf50;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#skipMiddle {
+    margin-left: auto;
+    font-size: 14px;
 }
 
 /* ---------- Écran de jeu ---------- */

@@ -23,3 +23,12 @@ Pas de compte à rebours : le temps est seulement affiché, pour ne pas mettre d
 Ouvrez `index.html` dans un navigateur. Il n'y a rien à installer : c'est du HTML, du CSS et du JavaScript, sans bibliothèque.
 
 Le jeu peut aussi être publié avec GitHub Pages (Settings → Pages → branche `main`).
+
+Sans bouton central (pavé tactile d'ordinateur portable), le bouton « Je n'ai pas de bouton central » passe l'atelier et retire ce bouton du Grand défi.
+
+## Organisation du code
+
+- `js/core.js` : menu, déroulement d'une partie, score, étoiles, dessin de la souris.
+- `js/ateliers/*.js` : un fichier par atelier, qui s'enregistre avec `MouseGame.register({ id, title, text, hint, rounds, order, start })`.
+
+Pour ajouter un atelier : créer son fichier dans `js/ateliers/`, puis l'ajouter dans `index.html`. Les scripts sont classiques, sans modules, pour que `index.html` s'ouvre aussi sans serveur.
