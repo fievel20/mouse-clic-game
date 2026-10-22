@@ -9,6 +9,7 @@ Même charte graphique que [OCN-mouse-campus](https://github.com/le-campus-numer
 | --- | --- |
 | Clic gauche | Cliquer sur un fichier avec le bouton gauche |
 | Clic droit | Ouvrir le menu d'un fichier avec le bouton droit |
+| Double-clic | Ouvrir un dossier avec deux clics rapides (800 ms, puis 500 ms comme sous Windows) |
 | Bouton central | Appuyer sur la molette comme sur un bouton |
 | Molette | Tourner la molette pour monter ou descendre un fichier jusqu'au dossier |
 | Glisser-déposer | Ranger un fichier dans un dossier, puis trier documents et images |

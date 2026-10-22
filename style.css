@@ -39,11 +39,18 @@ h2 {
 }
 
 /* ---------- Menu ---------- */
+/* 4 cartes par ligne au plus, la dernière ligne centrée */
 .cards {
-    display: grid;
-    grid-template-columns: repeat(3, 220px);
+    display: flex;
+    flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.cards .card {
+    width: 200px;
 }
 
 .card {
@@ -215,6 +222,11 @@ h2 {
     outline-offset: -6px;
 }
 
+/* Dossier sélectionné après un premier clic, comme sur un vrai bureau */
+.cell.selected {
+    background-color: #dcdce6;
+}
+
 .cell.goal {
     outline: 3px dashed #4caf50;
     outline-offset: -6px;
@@ -376,8 +388,3 @@ h2 {
     background-color: #808080;
 }
 
-@media (max-width: 760px) {
-    .cards {
-        grid-template-columns: repeat(2, minmax(0, 220px));
-    }
-}
