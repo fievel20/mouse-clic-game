@@ -106,7 +106,40 @@
         selectText(p, start, start + wanted.length, /Double-cliquez/.test(message()) ? 2 : 1);
     }
 
+    // Fait glisser l'ascenseur pour amener la liste à la position voulue (en pixels de défilement)
+    function dragThumbTo(view, target) {
+        const thumb = view.querySelector('.sb-thumb');
+        const rows = view.querySelectorAll('.sb-row').length;
+        const max = rows * 40 - 320;
+        const travel = view.querySelector('.sb-track').offsetHeight - thumb.offsetHeight;
+        const from = center(thumb);
+        const scroll = Number(view.dataset.scroll);
+        pointer(thumb, 'pointerdown', from);
+        pointer(thumb, 'pointermove', { x: from.x, y: from.y + (target - scroll) * travel / max });
+        pointer(thumb, 'pointerup', from);
+    }
+
+    function stepScrollbar(view) {
+        const name = quoted()[0];
+        const row = $$('#board .sb-row').find((r) => r.textContent === (name || 'Mon dossier'));
+        if (!row) return;
+        const top = Number(row.dataset.index) * 40;
+        const scroll = Number(view.dataset.scroll);
+        if (top >= scroll && top + 40 <= scroll + 320) {
+            press(row, 0);
+        } else if (/Niveau 2/.test($('#gameTitle').textContent)) {
+            press(view.querySelector(top > scroll ? '.sb-arrow.down' : '.sb-arrow.up'), 0);
+        } else {
+            dragThumbTo(view, top - 140);
+        }
+    }
+
     function step() {
+        const scrollView = $('#board .sb-view');
+        if (scrollView) {
+            stepScrollbar(scrollView);
+            return;
+        }
         if ($('.text-page')) {
             selectWanted();
             return;
@@ -228,7 +261,7 @@
         const locked = $$('.path .card.locked').length;
         const here = $('.path .card.here .card-title');
         log(locked === MouseGame.activities.length - 1 && here && here.textContent === 'Survol'
-            && $('.badges-title').textContent.includes('0 / 9'), 'Chemin : au départ, seul « Survol » est ouvert');
+            && $('.badges-title').textContent.includes('0 / 10'), 'Chemin : au départ, seul « Survol » est ouvert');
     }
 
     // Progression d'avant l'atelier Survol : les ateliers déjà commencés restent ouverts
@@ -248,9 +281,9 @@
     // Après tous les niveaux : 7 badges, diplôme, plus aucun atelier verrouillé
     function checkEndOfPath() {
         MouseGame.showMenu();
-        log($('.badges-title').textContent.includes('9 / 9') && $('#badges .diploma') && !$('.path .card.locked')
-            && $$('.path .card-badge').length === 9 && $$('.connector.done').length === 7 && $('.turn.done'),
-        'Chemin : 9 badges sur 9, diplôme et chemin entièrement vert');
+        log($('.badges-title').textContent.includes('10 / 10') && $('#badges .diploma') && !$('.path .card.locked')
+            && $$('.path .card-badge').length === 10 && $$('.connector.done').length === 8 && $('.turn.done'),
+        'Chemin : 10 badges sur 10, diplôme et chemin entièrement vert');
     }
 
     // Sans bouton central : l'atelier est franchi, et son badge n'est plus demandé
@@ -262,8 +295,8 @@
         } catch (e) { /* stockage indisponible */ }
         MouseGame.showMenu();
         const here = $('.path .card.here .card-title');
-        log(here && here.textContent === 'Molette' && $('.badges-title').textContent.includes('0 / 8'),
-            'Chemin sans bouton central : « Molette » s’ouvre et il reste 8 badges');
+        log(here && here.textContent === 'Molette' && $('.badges-title').textContent.includes('0 / 9'),
+            'Chemin sans bouton central : « Molette » s’ouvre et il reste 9 badges');
     }
 
     // Scénarios d'erreur : on vérifie que le jeu compte bien les erreurs
@@ -306,6 +339,18 @@
         await wait(30);
         log(errorsCount() === 0 && /essayez le (double|triple)-clic/.test(message()) && $('#score').textContent.startsWith('Réussites : 0'),
             'Sélection niv. 3 : sans le raccourci, on propose de réessayer');
+
+        MouseGame.startActivity(byId('barre'), 1);
+        const sbView = $('#board .sb-view');
+        sbView.dispatchEvent(new WheelEvent('wheel', { bubbles: true, cancelable: true, deltaY: 100 }));
+        const wheelRefused = sbView.dataset.scroll === '0' && /pas de molette/.test(message());
+        press($$('#board .sb-row').find((r) => r.textContent !== 'Mon dossier' && Number(r.dataset.index) < 8), 0);
+        log(wheelRefused && errorsCount() === 1, 'Barre : la molette est désactivée, et une mauvaise ligne compte une erreur');
+
+        MouseGame.startActivity(byId('barre'), 2);
+        dragThumbTo($('#board .sb-view'), 400);
+        log($('#board .sb-view').dataset.scroll === '0' && /flèches/.test(message()) && errorsCount() === 0,
+            'Barre niv. 2 : l’ascenseur est refusé, sans erreur, au profit des flèches');
 
         MouseGame.startActivity(byId('gauche'), 1);
         press($('.cell.target'), 2);

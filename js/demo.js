@@ -210,6 +210,57 @@ window.MouseDemo = (() => {
             await caption('Vers l’écran, c’est l’inverse : ça remonte. Dans une liste, la molette fait défiler la page.', 3000);
         },
 
+        async barre() {
+            setMouse('drag');
+            const rows = Array.from({ length: 14 }, (_, i) => `<div class="sb-row">${MouseGame.ICONS.file}<span>Document ${i + 1}</span></div>`).join('');
+            const view = put(`<div class="sb-view"><div class="sb-content"><div class="sb-inner">${rows}</div></div>
+                <div class="sb-bar"><div class="sb-arrow up">▲</div><div class="sb-track"><div class="sb-thumb"></div></div><div class="sb-arrow down">▼</div></div></div>`,
+            170, 105, 'demo-sb');
+            const inner = view.querySelector('.sb-inner');
+            const thumb = view.querySelector('.sb-thumb');
+            const down = view.querySelector('.sb-arrow.down');
+            // Même calcul que dans l'atelier, à l'échelle de la démo (lignes de 34 px, 5 visibles)
+            const ROW = 34;
+            const max = 14 * ROW - 170;
+            const trackHeight = 170 - 2 * 22;
+            const thumbHeight = trackHeight * 170 / (14 * ROW);
+            thumb.style.height = thumbHeight + 'px';
+            const scrollTo = (value) => {
+                inner.style.transform = `translateY(${-value}px)`;
+                thumb.style.top = (value / max * (trackHeight - thumbHeight)) + 'px';
+            };
+            scrollTo(0);
+            // Centre d'un élément de la démo, en coordonnées de la scène
+            const at = (el) => {
+                const s = scene.getBoundingClientRect();
+                const r = el.getBoundingClientRect();
+                return [r.left - s.left + r.width / 2, r.top - s.top + r.height / 2];
+            };
+            await caption('À droite d’une liste, la barre de défilement permet de voir la suite.', 2600);
+            captionElement.textContent = 'Amenez la flèche sur l’ascenseur, la barre grise.';
+            await moveTo(...at(thumb));
+            captionElement.textContent = 'Appuyez sur le bouton gauche, gardez-le enfoncé…';
+            await press('left', true);
+            thumb.classList.add('dragging');
+            await wait(900);
+            captionElement.textContent = '…et faites glisser vers le bas : la liste défile.';
+            const start = at(thumb);
+            scrollTo(max * 0.6);
+            await moveTo(start[0], start[1] + (trackHeight - thumbHeight) * 0.6);
+            release('left');
+            thumb.classList.remove('dragging');
+            await caption('Relâchez quand vous voyez ce que vous cherchez.', 2200);
+            setMouse('left');
+            captionElement.textContent = 'La flèche ▼ fait descendre d’une ligne à chaque clic.';
+            await moveTo(...at(down));
+            for (let i = 1; i <= 2; i++) {
+                await press('left');
+                scrollTo(Math.min(max, max * 0.6 + i * ROW));
+                await wait(700);
+            }
+            await caption('Et un clic dans la piste, au-dessus ou en dessous de l’ascenseur, saute d’une page.', 3000);
+        },
+
         async glisser() {
             setMouse('drag');
             const target = file(80, 95);
