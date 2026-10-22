@@ -87,6 +87,43 @@ Pour ajouter un dessin, complétez `mouseSvg()` dans `js/core.js`. Les flèches 
 | Glisser-déposer | `kinds` (types de fichiers à trier : `'doc'`, `'image'`, `'music'`), `size` (labyrinthe de `size × size` cases, impair) |
 | Sélection de texte | `mode` : `'word'`, `'group'`, `'shortcuts'` (double et triple-clic) |
 | Sélection multiple | `mode` : `'ctrl'` (Ctrl + clic), `'shift'` (Maj + clic), `'lasso'` (rectangle de sélection) |
+| Ranger le bureau | `mission` : numéro de la mission dans `MISSIONS` (0, 1 ou 2). `rounds` est remplacé par le nombre de tâches. |
+
+## Écrire une mission (`js/ateliers/mission.js`)
+
+Une mission décrit un petit bureau et une liste de tâches, dans le tableau `MISSIONS` :
+
+```js
+{
+    items: [
+        { name: 'Photos', kind: 'folder', x: 24, y: 20, contents: ['vacances.jpg'] },
+        { name: 'plage.jpg', icon: 'image', x: 190, y: 40 }
+    ],
+    tasks: [
+        { hint: 'double', text: 'Ouvrez le dossier « Photos » : double-cliquez dessus.', action: { type: 'open', name: 'Photos' } },
+        { hint: 'drag', text: 'Rangez « plage.jpg » dans « Photos ».', action: { type: 'move', names: ['plage.jpg'], into: 'Photos' } }
+    ]
+}
+```
+
+- **`items`** : les icônes du bureau, positionnées en pixels dans une zone de 620 × 340. Une icône fait 76 × 80. Un dossier a `kind: 'folder'` et un contenu (`contents`), affiché quand on l'ouvre. Un fichier a une icône (`file`, `image`, `music`).
+- **`tasks`** : à faire dans l'ordre. `text` est la consigne. Le début de `text`, jusqu'au « : », sert d'intitulé dans la liste à cocher. `hint` est le dessin de souris.
+- **`action`** : ce qui valide la tâche. Le robot des tests la lit aussi, dans `data-action` du bureau.
+
+| `action.type` | Validée quand… | Champs |
+| --- | --- | --- |
+| `open` | un dossier ou fichier est ouvert (double-clic ou « Ouvrir ») | `name` |
+| `close` | la fenêtre est fermée par ✕ | — |
+| `rename` | « Renommer » est choisi sur l'icône. Le jeu tape le nouveau nom à la place du joueur. | `name`, `to` |
+| `delete` | « Supprimer » est choisi sur l'icône | `name` |
+| `move` | ces fichiers sont lâchés ensemble sur ce dossier | `names`, `into` |
+| `select` | la sélection contient exactement ces fichiers (clic, Ctrl + clic ou rectangle) | `names` |
+| `scroll-end` | le document ouvert est lu jusqu'en bas | — |
+| `textselect` | ce texte est sélectionné dans le document ouvert | `text` |
+
+`rename`, `delete` et `move` modifient le bureau. S'ils ne correspondent pas à la tâche en cours, ils sont **refusés** et comptent une erreur : le bureau n'est jamais abîmé par une fausse manœuvre. Les autres actions ne sont jamais refusées.
+
+Le seul document disponible est la lettre `LETTER`, ouverte pour tout fichier qui n'est pas un dossier.
 
 ## `window.MouseGame`
 

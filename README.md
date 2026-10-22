@@ -17,13 +17,14 @@ Même charte graphique que [OCN-mouse-campus](https://github.com/le-campus-numer
 | Glisser-déposer | Ranger le fichier dans le dossier | Trier dans trois dossiers | Le labyrinthe de OCN-mouse-campus |
 | Sélection de texte | Sélectionner un mot en cliquant-glissant | Sélectionner un groupe de mots | Les raccourcis : double-clic (un mot) et triple-clic (un paragraphe) |
 | Sélection multiple | Ctrl + clic pour ajouter des fichiers un par un | Maj + clic pour sélectionner toute une plage | Tracer un rectangle de sélection autour d'un groupe |
-| Grand défi | Clics gauche, droit et central mélangés | Cases plus petites, icônes leurres | Contre la montre |
+| Grand défi | Clics gauche, droit et central mélangés |
+| **Ranger le bureau** (mission finale) | Ouvrir un dossier, renommer, ranger, supprimer | Le grand ménage : sélectionner plusieurs fichiers et les ranger ensemble | La lettre de Jeanne : ouvrir, lire jusqu'au bout, sélectionner la signature, ranger | Cases plus petites, icônes leurres | Contre la montre |
 
 ## Le chemin de progression et les badges
 
-Le menu est un **chemin** : les ateliers s'ouvrent dans l'ordre conseillé (survol, clic gauche, clic droit, double-clic, bouton central, molette, barre de défilement, glisser-déposer, sélection de texte, sélection multiple, Grand défi). Un atelier s'ouvre quand le précédent a ★★ au niveau 1. Un atelier déjà commencé reste toujours ouvert, même si un nouvel atelier est ajouté avant lui sur le chemin. La mention « ▶ Vous êtes ici » indique l'étape à faire.
+Le menu est un **chemin** : les ateliers s'ouvrent dans l'ordre conseillé (survol, clic gauche, clic droit, double-clic, bouton central, molette, barre de défilement, glisser-déposer, sélection de texte, sélection multiple, Grand défi, puis la mission finale « Ranger le bureau »). Un atelier s'ouvre quand le précédent a ★★ au niveau 1. Un atelier déjà commencé reste toujours ouvert, même si un nouvel atelier est ajouté avant lui sur le chemin. La mention « ▶ Vous êtes ici » indique l'étape à faire.
 
-Réussir le **niveau 3** d'un atelier avec ★★ rapporte son **badge** 🏅. Avec les 11 badges, on obtient le diplôme « Bravo, vous maîtrisez la souris ! ». Sans bouton central, cet atelier est considéré comme franchi et son badge n'est pas demandé.
+Réussir le **niveau 3** d'un atelier avec ★★ rapporte son **badge** 🏅. Avec les 12 badges, on obtient le diplôme « Bravo, vous maîtrisez la souris ! ». Sans bouton central, cet atelier est considéré comme franchi et son badge n'est pas demandé.
 
 ## Les démonstrations
 

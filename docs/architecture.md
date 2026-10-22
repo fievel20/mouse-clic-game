@@ -31,6 +31,7 @@ js/tests.js             Tests automatiques, chargés seulement avec index.html?t
 | Sélection de texte | `selection` | `selection.js` | 60 |
 | Sélection multiple | `multiple` | `multiple.js` | 70 |
 | Grand défi | `melange` | `clics.js` | 90 |
+| Ranger le bureau (mission finale) | `mission` | `mission.js` | 95 |
 
 `clics.js` regroupe 4 ateliers : ils partagent la même grille de clic, avec des options différentes.
 

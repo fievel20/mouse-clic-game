@@ -365,6 +365,41 @@ window.MouseDemo = (() => {
             await caption('Tous les fichiers dans le rectangle sont sélectionnés.', 2400);
         },
 
+        async mission() {
+            setMouse('all');
+            // La liste de tâches est placée par son coin haut gauche
+            const list = put('<div>1. Ouvrir un dossier</div><div>2. Ranger un fichier</div><div>3. Supprimer un brouillon</div>', 14, 20, 'demo-checklist');
+            const lines = list.querySelectorAll('div');
+            const box = folder(250, 50, 'Photos');
+            const photo = file(250, 160);
+            await caption('La mission finale : de vraies tâches sur un petit bureau, avec tous les gestes appris.', 3000);
+            captionElement.textContent = 'À gauche, la liste des tâches, à faire dans l’ordre.';
+            lines[0].classList.add('current');
+            await wait(2200);
+            setMouse('double');
+            await moveToEl(box);
+            await press('left');
+            await wait(120);
+            await press('left');
+            lines[0].classList.replace('current', 'done');
+            lines[1].classList.add('current');
+            captionElement.textContent = 'Chaque tâche réussie est cochée…';
+            await wait(1800);
+            setMouse('drag');
+            await moveToEl(photo);
+            await press('left', true);
+            photo.classList.add('lifted');
+            carried = photo;
+            await moveToEl(box);
+            carried = null;
+            release('left');
+            photo.remove();
+            box.classList.add('done');
+            lines[1].classList.replace('current', 'done');
+            lines[2].classList.add('current');
+            await caption('…et on passe à la suivante. Bonne mission !', 2600);
+        },
+
         async melange() {
             const targets = [file(90, 80), file(200, 150), file(290, 70)];
             await caption('Dans le Grand défi, les boutons changent à chaque fichier.', 2400);
