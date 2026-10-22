@@ -45,6 +45,7 @@ La fonction `step()` regarde ce qui est affiché et fait **une** action :
 | À l'écran | Action du robot |
 | --- | --- |
 | Liste avec barre de défilement | Clique la ligne si elle est visible, sinon flèche (niveau 2) ou glisser de l'ascenseur |
+| Bureau de la mission | Lit l'action attendue (`data-action`) et la fait : double-clic, menu du clic droit, glisser, Ctrl + clic, rectangle, défilement, sélection de texte |
 | Explorateur, liste ou bureau de la sélection multiple | Clic puis Ctrl + clic sur les fichiers demandés, ou clic puis Maj + clic, ou rectangle autour des photos |
 | Page de texte | Sélectionne le texte demandé, avec le bon nombre de clics (1, 2 ou 3) |
 | Atelier Survol | Survole la cible, ou le menu puis le sous-menu, ou clique le fichier nommé |

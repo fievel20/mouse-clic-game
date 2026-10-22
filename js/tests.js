@@ -168,7 +168,94 @@
         }
     }
 
+    // ---------- Mission finale : le bureau expose l'action attendue dans data-action ----------
+    function pointerWith(el, type, { x, y }, keys = {}) {
+        el.dispatchEvent(new PointerEvent(type, Object.assign({ bubbles: true, cancelable: true, button: 0, clientX: x, clientY: y, pointerId: 1 }, keys)));
+    }
+
+    function missionIcon(name) {
+        return $(`.mi-desk .mi-icon[data-name="${name}"]`);
+    }
+
+    // Glisse un fichier (et la sélection qui le suit) sur un dossier
+    function missionDrag(name, into) {
+        const desk = $('.mi-desk');
+        const from = center(missionIcon(name));
+        const to = center(missionIcon(into));
+        pointerWith(missionIcon(name), 'pointerdown', from);
+        pointerWith(desk, 'pointermove', to);
+        pointerWith(desk, 'pointerup', to);
+    }
+
+    function missionMenu(name, action) {
+        press(missionIcon(name), 2);
+        const entry = $(`.mi-desk .context-menu [data-action="${action}"]`);
+        if (entry) press(entry, 0);
+    }
+
+    function stepMission(desk) {
+        const action = JSON.parse(desk.dataset.action);
+        switch (action.type) {
+            case 'open':
+                missionIcon(action.name).dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+                break;
+            case 'close':
+                press($('.mi-close'), 0);
+                break;
+            case 'rename':
+            case 'delete':
+                if (missionIcon(action.name)) missionMenu(action.name, action.type);
+                break;
+            case 'select': {
+                const icons = action.names.map(missionIcon);
+                if (icons.length >= 4) {
+                    // Rectangle de sélection, en partant du vide
+                    const boxes = icons.map((el) => el.getBoundingClientRect());
+                    const from = { x: Math.min(...boxes.map((b) => b.left)) - 8, y: Math.min(...boxes.map((b) => b.top)) - 8 };
+                    const to = { x: Math.max(...boxes.map((b) => b.right)) + 8, y: Math.max(...boxes.map((b) => b.bottom)) + 8 };
+                    pointerWith(desk, 'pointerdown', from);
+                    pointerWith(desk, 'pointermove', to);
+                    pointerWith(desk, 'pointerup', to);
+                } else {
+                    // Un clic, puis Ctrl + clic sur les autres
+                    icons.forEach((el, i) => {
+                        pointerWith(el, 'pointerdown', center(el), i ? { ctrlKey: true } : {});
+                        pointerWith(desk, 'pointerup', center(el));
+                    });
+                }
+                break;
+            }
+            case 'move':
+                if (missionIcon(action.names[0])) missionDrag(action.names[0], action.into);
+                break;
+            case 'scroll-end': {
+                const doc = $('.mi-doc');
+                doc.scrollTop = doc.scrollHeight;
+                doc.dispatchEvent(new Event('scroll'));
+                break;
+            }
+            case 'textselect': {
+                const p = $$('.mi-doc p').find((el) => el.textContent.includes(action.text));
+                const range = document.createRange();
+                const start = p.textContent.indexOf(action.text);
+                range.setStart(p.firstChild, start);
+                range.setEnd(p.firstChild, start + action.text.length);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                p.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
     function step() {
+        const missionDesk = $('.mi-desk');
+        if (missionDesk) {
+            stepMission(missionDesk);
+            return;
+        }
         if ($('.ms-explorer, .ms-list, .ms-desk')) {
             stepMultiple();
             return;
@@ -427,6 +514,14 @@
         lassoAround($$('.ms-free').filter(isPhoto).slice(0, 1));
         log(errorsCount() === 1 && /Il manque 3 photos/.test(message()),
             'Sélection multiple niv. 3 : un rectangle trop petit compte une erreur');
+
+        // Mission : une action qui n'est pas la tâche en cours est refusée, et le bureau n'est pas abîmé
+        MouseGame.startActivity(byId('mission'), 1);
+        missionMenu('recette.txt', 'delete');
+        const refusedDelete = errorsCount() === 1 && missionIcon('recette.txt') && /Pas maintenant/.test(message());
+        missionDrag('plage.jpg', 'Photos');
+        log(refusedDelete && errorsCount() === 2 && missionIcon('plage.jpg') && $('#score').textContent.startsWith('Réussites : 0'),
+            'Mission : supprimer ou ranger hors de la tâche en cours est refusé et compte une erreur');
 
         MouseGame.startActivity(byId('gauche'), 1);
         press($('.cell.target'), 2);
