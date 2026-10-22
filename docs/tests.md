@@ -10,7 +10,7 @@ Le résultat est aussi disponible dans la console du navigateur :
 window.testResults   // { passed: 58, total: 58, results: [{ ok: true, text: '…' }, …] }
 ```
 
-Les tests fonctionnent aussi en ouvrant le fichier directement (`file://`), sans serveur.
+Les tests ont été mis au point avec un petit serveur local (voir [Lancer et déployer](deploiement.md)). Ils sont conçus pour fonctionner aussi en ouvrant le fichier directement (`file://`), puisque le code n'utilise que des scripts classiques, mais ce mode n'a pas été vérifié systématiquement.
 
 ## Ce que change le mode test
 

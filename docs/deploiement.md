@@ -2,9 +2,9 @@
 
 ## En local
 
-**Le plus simple :** ouvrez `index.html` dans un navigateur (double-clic sur le fichier). Le jeu et les tests fonctionnent tels quels, sans serveur.
+**Le plus simple :** ouvrez `index.html` dans un navigateur (double-clic sur le fichier). Le jeu est conçu pour fonctionner ainsi, sans serveur : c'est pour cela qu'il n'utilise pas de modules JavaScript.
 
-**Avec un petit serveur**, pour être au plus près de la version en ligne, par exemple avec Python :
+**Avec un petit serveur**, c'est-à-dire comme la version en ligne et comme pendant le développement, par exemple avec Python :
 
 ```bash
 python -m http.server 8123
