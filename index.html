@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse Clic Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Menu principal -->
+<div class="container" id="menu">
+    <h1>Mouse Clic Game</h1>
+    <p class="subtitle">Entraînez-vous à utiliser la souris, un atelier à la fois.</p>
+    <div class="cards" id="cards"></div>
+    <button class="link-button" id="resetProgress">Effacer ma progression</button>
+</div>
+
+<!-- Écran de jeu -->
+<div class="container hidden" id="game">
+    <div class="topbar">
+        <button class="back-button" id="backButton">← Menu</button>
+        <h2 id="gameTitle"></h2>
+        <button class="back-button hidden" id="skipMiddle">Je n’ai pas de bouton central</button>
+    </div>
+    <div class="instruction">
+        <div class="mouse-hint" id="mouseHint"></div>
+        <div class="message" id="message"></div>
+    </div>
+    <div class="board" id="board"></div>
+    <div class="stats">
+        <span class="score" id="score">Réussites : 0 / 10</span>
+        <span class="errors" id="errors">Erreurs : 0</span>
+        <span class="timer" id="timer">Temps : 00:00</span>
+    </div>
+</div>
+
+<!-- Fenêtre de résultat -->
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <div class="result-message" id="resultMessage"></div>
+        <div class="result-detail" id="resultDetail"></div>
+        <button class="reset-button" id="replayButton">Rejouer</button>
+        <button class="reset-button secondary" id="menuButton">Retour au menu</button>
+    </div>
+</div>
+
+<!-- Scripts classiques (pas de modules) : le jeu s'ouvre aussi par double-clic sur index.html -->
+<script src="js/core.js"></script>
+<script src="js/ateliers/clics.js"></script>
+<script src="js/ateliers/double-clic.js"></script>
+<script src="js/ateliers/molette.js"></script>
+<script src="js/ateliers/glisser.js"></script>
+<script>MouseGame.start();</script>
+</body>
+</html>
