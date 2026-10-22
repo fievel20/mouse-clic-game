@@ -57,7 +57,7 @@
             firstClickTime = 0;
             locked = false;
             game.setHint('double');
-            game.setMessage(instruction());
+            game.setInstruction(instruction());
         }
 
         function clearSelection() {
@@ -81,9 +81,9 @@
                 if (cell && cell.classList.contains('decoy')) {
                     game.error();
                     flashError(cell);
-                    game.setMessage(`Ce n’est pas le bon dossier. ${instruction()}`, 'bad');
+                    game.setFeedback('Ce n’est pas le bon dossier.', 'bad');
                 } else {
-                    game.setMessage('Presque ! Visez bien le dossier, puis cliquez deux fois.', 'bad');
+                    game.setFeedback('Presque ! Visez bien le dossier, puis cliquez deux fois.', 'bad');
                 }
                 return;
             }
@@ -91,7 +91,7 @@
                 game.error();
                 clearSelection();
                 flashError(target);
-                game.setMessage('Ce n’est pas le bon bouton : le double-clic se fait avec le bouton gauche.', 'bad');
+                game.setFeedback('Ce n’est pas le bon bouton : le double-clic se fait avec le bouton gauche.', 'bad');
                 return;
             }
             const now = Date.now();
@@ -100,7 +100,7 @@
                 clearSelection();
                 target.classList.add('success');
                 target.innerHTML = ICONS.folderOpen + (level.named ? label(targetName) : '');
-                game.setMessage('Bravo ! Le dossier s’ouvre.', 'good');
+                game.setFeedback('Bravo ! Le dossier s’ouvre.', 'good');
                 game.success(nextTarget, 900);
                 return;
             }
@@ -108,12 +108,12 @@
             clearSelection();
             firstClickTime = now;
             target.classList.add('selected');
-            game.setMessage('Un clic sélectionne le dossier… cliquez encore, vite !');
+            game.setFeedback('Un clic sélectionne le dossier… cliquez encore, vite !');
             resetTimer = game.later(() => {
                 if (!firstClickTime) return;
                 game.error();
                 clearSelection();
-                game.setMessage('Trop lent : les deux clics doivent se suivre sans attendre. Réessayez.', 'bad');
+                game.setFeedback('Trop lent : les deux clics doivent se suivre sans attendre. Réessayez.', 'bad');
             }, level.delay);
         });
         grid.addEventListener('contextmenu', (e) => e.preventDefault());

@@ -8,7 +8,8 @@ window.MouseGame = (() => {
     const gameTitle = document.getElementById('gameTitle');
     const levelText = document.getElementById('levelText');
     const mouseHint = document.getElementById('mouseHint');
-    const messageElement = document.getElementById('message');
+    const instructionElement = document.getElementById('instruction');
+    const feedbackElement = document.getElementById('feedback');
     const scoreElement = document.getElementById('score');
     const errorsElement = document.getElementById('errors');
     const timerElement = document.getElementById('timer');
@@ -200,9 +201,16 @@ window.MouseGame = (() => {
         mouseHint.innerHTML = mouseSvg(part);
     }
 
-    function setMessage(text, kind) {
-        messageElement.textContent = text;
-        messageElement.className = 'message' + (kind ? ' ' + kind : '');
+    // Énoncé de la manche, en gras. Il reste affiché ; le commentaire précédent est effacé.
+    function setInstruction(text) {
+        instructionElement.textContent = text;
+        setFeedback('');
+    }
+
+    // Commentaire sous l'énoncé : 'good' (vert), 'bad' (rouge) ou 'info' (conseil, gris foncé)
+    function setFeedback(text, kind = 'info') {
+        feedbackElement.textContent = text;
+        feedbackElement.className = 'feedback ' + kind;
     }
 
     function updateStats() {
@@ -432,7 +440,8 @@ window.MouseGame = (() => {
         randomInt,
         shuffle,
         setHint,
-        setMessage,
+        setInstruction,
+        setFeedback,
         success,
         error,
         getSetting,

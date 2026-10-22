@@ -33,12 +33,24 @@
         el.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, button: 0, clientX: x, clientY: y, pointerId: 1 }));
     }
 
-    function message() {
-        return $('#message').textContent;
+    // Énoncé de la manche (en gras)
+    function instruction() {
+        return $('#instruction').textContent;
     }
 
+    // Commentaire sous l'énoncé (vert, rouge ou conseil)
+    function feedback() {
+        return $('#feedback').textContent;
+    }
+
+    // Énoncé et commentaire ensemble, pour chercher un mot dans l'un ou l'autre
+    function message() {
+        return instruction() + '\n' + feedback();
+    }
+
+    // Textes entre « guillemets » de l'énoncé : fichiers, mots ou actions demandés
     function quoted() {
-        const match = message().match(/« ([^»]+) »/g);
+        const match = instruction().match(/« ([^»]+) »/g);
         return match ? match.map((m) => m.slice(2, -2)) : [];
     }
 
@@ -93,7 +105,7 @@
     function selectWanted() {
         const paragraphs = $$('.text-page p');
         // \S et non \w, qui ne reconnaît pas les lettres accentuées de « deuxième »
-        const triple = message().match(/Triple-cliquez dans le (\S+) paragraphe/);
+        const triple = instruction().match(/Triple-cliquez dans le (\S+) paragraphe/);
         if (triple) {
             const p = paragraphs[['premier', 'deuxième', 'troisième'].indexOf(triple[1])];
             selectText(p, 0, p.firstChild.length, 3);
@@ -103,7 +115,7 @@
         if (!wanted) return;
         const p = paragraphs.find((el) => el.textContent.includes(wanted));
         const start = p.textContent.indexOf(wanted);
-        selectText(p, start, start + wanted.length, /Double-cliquez/.test(message()) ? 2 : 1);
+        selectText(p, start, start + wanted.length, /Double-cliquez/.test(instruction()) ? 2 : 1);
     }
 
     // Fait glisser l'ascenseur pour amener la liste à la position voulue (en pixels de défilement)
@@ -350,7 +362,7 @@
             press(target, 0);
             return;
         }
-        const text = message();
+        const text = instruction();
         press(target, /clic droit|bouton droit/.test(text) ? 2 : /central/.test(text) ? 1 : 0);
     }
 
@@ -465,11 +477,11 @@
         const wordStart = wordParagraph.textContent.indexOf(word);
         selectText(wordParagraph, wordStart, wordStart + 3, 1);
         await wait(30);
-        log(errorsCount() === 1 && /Il manque un bout/.test(message()), 'Sélection : un mot sélectionné à moitié compte une erreur');
+        log(errorsCount() === 1 && /Il manque un bout/.test(feedback()), 'Sélection : un mot sélectionné à moitié compte une erreur');
 
         // Niveau 3 : la bonne sélection faite en glissant au lieu du raccourci est refusée, sans erreur
         MouseGame.startActivity(byId('selection'), 3);
-        const shortcut = message();
+        const shortcut = instruction();
         if (/Double-cliquez/.test(shortcut)) {
             const w = quoted()[0];
             const p = $$('.text-page p').find((el) => el.textContent.includes(w));
@@ -479,19 +491,19 @@
             selectText(p, 0, p.firstChild.length, 1);
         }
         await wait(30);
-        log(errorsCount() === 0 && /essayez le (double|triple)-clic/.test(message()) && $('#score').textContent.startsWith('Réussites : 0'),
+        log(errorsCount() === 0 && /essayez le (double|triple)-clic/.test(feedback()) && $('#score').textContent.startsWith('Réussites : 0'),
             'Sélection niv. 3 : sans le raccourci, on propose de réessayer');
 
         MouseGame.startActivity(byId('barre'), 1);
         const sbView = $('#board .sb-view');
         sbView.dispatchEvent(new WheelEvent('wheel', { bubbles: true, cancelable: true, deltaY: 100 }));
-        const wheelRefused = sbView.dataset.scroll === '0' && /pas de molette/.test(message());
+        const wheelRefused = sbView.dataset.scroll === '0' && /pas de molette/.test(feedback());
         press($$('#board .sb-row').find((r) => r.textContent !== 'Mon dossier' && Number(r.dataset.index) < 8), 0);
         log(wheelRefused && errorsCount() === 1, 'Barre : la molette est désactivée, et une mauvaise ligne compte une erreur');
 
         MouseGame.startActivity(byId('barre'), 2);
         dragThumbTo($('#board .sb-view'), 400);
-        log($('#board .sb-view').dataset.scroll === '0' && /flèches/.test(message()) && errorsCount() === 0,
+        log($('#board .sb-view').dataset.scroll === '0' && /flèches/.test(feedback()) && errorsCount() === 0,
             'Barre niv. 2 : l’ascenseur est refusé, sans erreur, au profit des flèches');
 
         MouseGame.startActivity(byId('multiple'), 1);
@@ -499,7 +511,7 @@
         const msItem = (name) => $$('.ms-explorer .ms-item').find((el) => el.textContent === name);
         pressWith(msItem(firstName), {});
         pressWith(msItem(secondName), {});
-        log(errorsCount() === 1 && /Sans Ctrl/.test(message()) && $$('.ms-item.selected').length === 1,
+        log(errorsCount() === 1 && /Sans Ctrl/.test(feedback()) && $$('.ms-item.selected').length === 1,
             'Sélection multiple : un clic sans Ctrl remplace la sélection et compte une erreur');
 
         MouseGame.startActivity(byId('multiple'), 2);
@@ -512,24 +524,27 @@
 
         MouseGame.startActivity(byId('multiple'), 3);
         lassoAround($$('.ms-free').filter(isPhoto).slice(0, 1));
-        log(errorsCount() === 1 && /Il manque 3 photos/.test(message()),
+        log(errorsCount() === 1 && /Il manque 3 photos/.test(feedback()),
             'Sélection multiple niv. 3 : un rectangle trop petit compte une erreur');
 
         // Mission : une action qui n'est pas la tâche en cours est refusée, et le bureau n'est pas abîmé
         MouseGame.startActivity(byId('mission'), 1);
         missionMenu('recette.txt', 'delete');
-        const refusedDelete = errorsCount() === 1 && missionIcon('recette.txt') && /Pas maintenant/.test(message());
+        const refusedDelete = errorsCount() === 1 && missionIcon('recette.txt') && /Pas maintenant/.test(feedback());
         missionDrag('plage.jpg', 'Photos');
         log(refusedDelete && errorsCount() === 2 && missionIcon('plage.jpg') && $('#score').textContent.startsWith('Réussites : 0'),
             'Mission : supprimer ou ranger hors de la tâche en cours est refusé et compte une erreur');
 
         MouseGame.startActivity(byId('gauche'), 1);
+        const statement = instruction();
         press($('.cell.target'), 2);
         log(errorsCount() === 1, 'Clic gauche : le mauvais bouton compte une erreur');
+        log(instruction() === statement && /bon bouton/.test(feedback()) && $('#feedback').classList.contains('bad'),
+            'Après une erreur, l’énoncé reste affiché et le commentaire rouge s’ajoute en dessous');
 
         MouseGame.startActivity(byId('gauche'), 3);
         await wait(200);
-        log(errorsCount() >= 1 && /Trop tard/.test(message()), 'Clic gauche niv. 3 : le temps écoulé compte une erreur');
+        log(errorsCount() >= 1 && /Trop tard/.test(feedback()), 'Clic gauche niv. 3 : le temps écoulé compte une erreur');
 
         MouseGame.startActivity(byId('droit'), 2);
         press($('.cell.target'), 2);
@@ -541,7 +556,7 @@
         MouseGame.startActivity(byId('double'), 1);
         press($('.cell.target'), 0);
         await wait(100);
-        log(errorsCount() === 1 && /Trop lent/.test(message()), 'Double-clic : un double-clic trop lent compte une erreur');
+        log(errorsCount() === 1 && /Trop lent/.test(feedback()), 'Double-clic : un double-clic trop lent compte une erreur');
 
         MouseGame.startActivity(byId('central'), 3);
         press($(`.fake-link[data-name="${quoted()[0]}"]`), 0);

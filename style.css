@@ -401,11 +401,26 @@ h2 {
     text-align: left;
 }
 
-.message.bad {
+/* L'énoncé reste affiché, en gras ; le commentaire s'affiche en dessous */
+.instruction-text {
+    font-weight: bold;
+}
+
+.feedback {
+    min-height: 26px;
+    margin-top: 6px;
+    font-size: 19px;
+}
+
+.feedback.info {
+    color: #555;
+}
+
+.feedback.bad {
     color: #ff4c4c;
 }
 
-.message.good {
+.feedback.good {
     color: #4caf50;
 }
 

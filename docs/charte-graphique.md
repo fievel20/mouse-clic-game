@@ -23,7 +23,8 @@ Le jeu reprend la charte de [OCN-mouse-campus](https://github.com/le-campus-nume
 ## Typographie
 
 - **Arial**, partout.
-- Titre du menu : 32 px. Titre d'une partie : 26 px. Consigne : 22 px. Compteurs : 20 px.
+- Titre du menu : 32 px. Titre d'une partie : 26 px. Énoncé : 22 px, en gras. Commentaire sous l'énoncé : 19 px. Compteurs : 20 px.
+- Le commentaire est vert (`#4caf50`) pour une réussite, rouge (`#ff4c4c`) pour une erreur, et gris foncé (`#555`) pour un simple conseil.
 - Les textes destinés au joueur sont courts, au présent, au vouvoiement, sans jargon. On écrit « la flèche » plutôt que « le pointeur », et « l'ascenseur (la barre grise) » à la première mention.
 
 ## Composants
@@ -48,7 +49,8 @@ La **souris dessinée** (`mouseSvg`) est l'élément clé du jeu : la partie à 
 
 - **Pas de cadre ni de pointillés autour de la cible** (fichier à cliquer, dossier où déposer) : il faut la repérer soi-même. Un dossier survolé pendant un glisser-déposer prend seulement un fond vert clair.
 - **Pas de compte à rebours**, sauf au niveau 3 du clic gauche et du Grand défi. Le temps est seulement affiché.
-- **Une erreur est toujours expliquée** dans la consigne, en rouge.
+- **L'énoncé reste toujours affiché**, en gras. Les réactions du jeu s'affichent en dessous, sans le remplacer.
+- **Une erreur est toujours expliquée**, dans le commentaire en rouge.
 
 ## Mise en page
 

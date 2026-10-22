@@ -139,7 +139,7 @@
             });
             desk.dataset.action = JSON.stringify(task().action);
             game.setHint(task().hint);
-            game.setMessage(task().text);
+            game.setInstruction(task().text);
         }
 
         function nextTask() {
@@ -154,13 +154,13 @@
             const ok = matches(event, task().action);
             if (!ok && CHANGES.includes(event.type)) {
                 game.error();
-                game.setMessage(`Pas maintenant ! ${task().text}`, 'bad');
+                game.setFeedback('Pas maintenant ! Ce n’est pas la tâche en cours.', 'bad');
                 return false;
             }
             if (ok) {
                 locked = true;
                 taskItems[taskIndex].classList.add('done');
-                game.setMessage(taskIndex < mission.tasks.length - 1 ? 'Bravo ! Tâche suivante…' : 'Bravo, mission accomplie !', 'good');
+                game.setFeedback(taskIndex < mission.tasks.length - 1 ? 'Bravo ! Tâche suivante…' : 'Bravo, mission accomplie !', 'good');
                 game.success(nextTask, 1000);
             }
             return true;
@@ -260,7 +260,7 @@
                     const text = window.getSelection() ? window.getSelection().toString() : '';
                     if (!normalize(text)) return;
                     if (!attempt({ type: 'textselect', text }) || task().action.type !== 'textselect') return;
-                    if (!locked) game.setMessage(`Vous avez sélectionné « ${normalize(text).slice(0, 40)} ». ${task().text}`, 'bad');
+                    if (!locked) game.setFeedback(`Vous avez sélectionné « ${normalize(text).slice(0, 40)} ». Ce n’est pas ce qui est demandé.`, 'bad');
                 }, 450);
             });
         }
@@ -436,7 +436,7 @@
             }
             // Lâché à côté (ou refusé) : les fichiers reviennent à leur place
             current.items.forEach(place);
-            if (current.moved && !folder) game.setMessage(`Lâchez bien sur le dossier. ${task().text}`, 'bad');
+            if (current.moved && !folder) game.setFeedback('Les fichiers sont revenus à leur place : lâchez-les bien sur le dossier.', 'bad');
         }
         desk.addEventListener('pointerup', endGesture);
         desk.addEventListener('pointercancel', endGesture);

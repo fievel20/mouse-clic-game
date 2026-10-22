@@ -78,25 +78,25 @@
                 const words = uniqueWords();
                 wanted = words[game.randomInt(words.length)];
                 game.setHint('drag');
-                game.setMessage(`Sélectionnez le mot « ${wanted} » : cliquez juste avant, gardez le bouton enfoncé et glissez jusqu’à la fin du mot.`);
+                game.setInstruction(`Sélectionnez le mot « ${wanted} » : cliquez juste avant, gardez le bouton enfoncé et glissez jusqu’à la fin du mot.`);
             } else if (level.mode === 'group') {
                 method = 'drag';
                 wanted = randomGroup();
                 game.setHint('drag');
-                game.setMessage(`Sélectionnez « ${wanted} » en glissant du premier au dernier mot.`);
+                game.setInstruction(`Sélectionnez « ${wanted} » en glissant du premier au dernier mot.`);
             } else if (game.randomInt(2) === 0) {
                 method = 'double';
                 const words = uniqueWords();
                 wanted = words[game.randomInt(words.length)];
                 game.setHint('double');
-                game.setMessage(`Double-cliquez sur le mot « ${wanted} » : il se sélectionne d’un coup.`);
+                game.setInstruction(`Double-cliquez sur le mot « ${wanted} » : il se sélectionne d’un coup.`);
             } else {
                 method = 'triple';
                 const index = game.randomInt(PAGES[pageIndex].length);
                 wanted = normalize(PAGES[pageIndex][index]);
                 const position = ['premier', 'deuxième', 'troisième'][index];
                 game.setHint('triple');
-                game.setMessage(`Triple-cliquez dans le ${position} paragraphe pour le sélectionner en entier.`);
+                game.setInstruction(`Triple-cliquez dans le ${position} paragraphe pour le sélectionner en entier.`);
             }
         }
 
@@ -125,35 +125,35 @@
                 const selected = normalize(selection.toString());
                 if (!selected) {
                     if (method === 'drag') {
-                        game.setMessage('Un simple clic ne sélectionne rien : gardez le bouton enfoncé en glissant.', 'bad');
+                        game.setFeedback('Un simple clic ne sélectionne rien : gardez le bouton enfoncé en glissant.', 'bad');
                     }
                     return;
                 }
                 const matches = selected.toLowerCase() === wanted.toLowerCase();
                 if (matches && method === 'drag' && clicks >= 2) {
-                    game.setMessage('Bien vu, le double-clic sélectionne un mot ! Ici, entraînez-vous plutôt à glisser.');
+                    game.setFeedback('Bien vu, le double-clic sélectionne un mot ! Ici, entraînez-vous plutôt à glisser.');
                     clearSelection();
                     return;
                 }
                 if (matches && method === 'double' && clicks !== 2) {
-                    game.setMessage('C’est bien sélectionné, mais essayez le double-clic : c’est plus rapide !');
+                    game.setFeedback('C’est bien sélectionné, mais essayez le double-clic : c’est plus rapide !');
                     clearSelection();
                     return;
                 }
                 if (matches && method === 'triple' && clicks < 3) {
-                    game.setMessage('C’est bien sélectionné, mais essayez le triple-clic : trois clics rapides.');
+                    game.setFeedback('C’est bien sélectionné, mais essayez le triple-clic : trois clics rapides.');
                     clearSelection();
                     return;
                 }
                 if (matches) {
                     locked = true;
-                    game.setMessage('Bravo, le texte est sélectionné !', 'good');
+                    game.setFeedback('Bravo, le texte est sélectionné !', 'good');
                     game.success(nextRound, 1200);
                     return;
                 }
                 game.error();
                 const tooShort = wanted.toLowerCase().includes(selected.toLowerCase());
-                game.setMessage(tooShort
+                game.setFeedback(tooShort
                     ? `Il manque un bout : vous avez sélectionné « ${selected} ». Recommencez.`
                     : `Vous avez sélectionné « ${selected.length > 40 ? selected.slice(0, 40) + '…' : selected} ». Recommencez.`, 'bad');
             }, MULTI_CLICK_MS);

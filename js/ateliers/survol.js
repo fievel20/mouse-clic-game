@@ -80,19 +80,19 @@
             hover.reset();
             locked = false;
             game.setHint('move');
-            game.setMessage('Posez la flèche sur le fichier, sans cliquer, et attendez : une bulle va apparaître.');
+            game.setInstruction('Posez la flèche sur le fichier, sans cliquer, et attendez : une bulle va apparaître.');
         }
 
         const hover = trackHover(grid, (cell) => {
             clearTimeout(dwellTimer);
             if (locked) return;
             if (cell !== grid.children[targetIndex]) return;
-            game.setMessage('Ne bougez plus… et surtout, ne cliquez pas !');
+            game.setFeedback('Ne bougez plus… et surtout, ne cliquez pas !');
             dwellTimer = game.later(() => {
                 locked = true;
                 cell.classList.add('success');
                 showTooltip(game, cell, name);
-                game.setMessage(`Bravo ! La bulle donne le nom du fichier : « ${name} ».`, 'good');
+                game.setFeedback(`Bravo ! La bulle donne le nom du fichier : « ${name} ».`, 'good');
                 game.success(nextRound, 1400);
             }, DWELL_MS);
         });
@@ -106,7 +106,7 @@
             game.error();
             cell.classList.add('error');
             game.later(() => cell.classList.remove('error'), 600);
-            game.setMessage('Pas besoin de cliquer ! Bougez un peu la flèche, puis laissez-la sur le fichier.', 'bad');
+            game.setFeedback('Pas besoin de cliquer ! Bougez un peu la flèche, puis laissez-la sur le fichier.', 'bad');
         });
         grid.addEventListener('contextmenu', (e) => e.preventDefault());
         game.onCleanup(() => clearTimeout(dwellTimer));
@@ -185,7 +185,7 @@
             hoverKey = null;
             locked = false;
             game.setHint('move');
-            game.setMessage(`Survolez « ${parent} » pour ouvrir le sous-menu, puis cliquez sur « ${child} ».`);
+            game.setInstruction(`Survolez « ${parent} » pour ouvrir le sous-menu, puis cliquez sur « ${child} ».`);
         }
 
         desk.addEventListener('mousemove', (e) => {
@@ -208,24 +208,24 @@
                 if (sub.dataset.parent === parent && subItem.dataset.name === child) {
                     locked = true;
                     subItem.classList.add('success');
-                    game.setMessage(`Bravo ! Vous avez choisi « ${parent} ▸ ${child} ».`, 'good');
+                    game.setFeedback(`Bravo ! Vous avez choisi « ${parent} ▸ ${child} ».`, 'good');
                     game.success(nextRound, 1000);
                 } else {
                     game.error();
                     subItem.classList.add('error');
                     game.later(() => subItem.classList.remove('error'), 600);
-                    game.setMessage(`Ce n’est pas le bon choix. Il faut « ${child} », dans « ${parent} ».`, 'bad');
+                    game.setFeedback(`Ce n’est pas le bon choix : vous avez cliqué sur « ${subItem.dataset.name} ».`, 'bad');
                 }
             } else if (item && item.classList.contains('has-sub')) {
                 // Cliquer ouvre aussi le sous-menu, mais ce n'est pas nécessaire
                 clearTimeout(hoverTimer);
                 openSub(item.dataset.name);
-                game.setMessage(`Pas besoin de cliquer ici : il suffit de laisser la flèche dessus. Cliquez ensuite sur « ${child} ».`);
+                game.setFeedback('Pas besoin de cliquer ici : il suffit de laisser la flèche dessus.');
             } else if (item) {
                 game.error();
                 item.classList.add('error');
                 game.later(() => item.classList.remove('error'), 600);
-                game.setMessage(`« ${item.dataset.name} » n’a pas de sous-menu. Survolez « ${parent} ».`, 'bad');
+                game.setFeedback(`« ${item.dataset.name} » n’a pas de sous-menu.`, 'bad');
             }
         });
         desk.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -260,7 +260,7 @@
             hover.reset();
             locked = false;
             game.setHint('move');
-            game.setMessage(`Trouvez « ${wanted} » : survolez les fichiers pour lire leur nom, puis cliquez dessus.`);
+            game.setInstruction(`Trouvez « ${wanted} » : survolez les fichiers pour lire leur nom, puis cliquez dessus.`);
         }
 
         const hover = trackHover(grid, (cell) => {
@@ -279,13 +279,13 @@
                 clearTimeout(tipTimer);
                 cell.classList.add('success');
                 showTooltip(game, cell, wanted);
-                game.setMessage(`Bravo, c’est bien « ${wanted} » !`, 'good');
+                game.setFeedback(`Bravo, c’est bien « ${wanted} » !`, 'good');
                 game.success(nextRound, 1000);
             } else {
                 game.error();
                 cell.classList.add('error');
                 game.later(() => cell.classList.remove('error'), 600);
-                game.setMessage(`Celui-ci s’appelle « ${cell.dataset.name} ». Lisez les bulles pour trouver « ${wanted} ».`, 'bad');
+                game.setFeedback(`Celui-ci s’appelle « ${cell.dataset.name} ». Lisez les bulles avant de cliquer.`, 'bad');
             }
         });
         grid.addEventListener('contextmenu', (e) => e.preventDefault());
