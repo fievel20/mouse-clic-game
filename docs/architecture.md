@@ -129,6 +129,16 @@ Le menu présente les ateliers dans l'ordre de `order`, 6 par ligne (constante `
 
 Un atelier rapporte son badge (`activity.badge`) avec ★★ à son **dernier** niveau. Avec tous les badges, le joueur obtient le diplôme. Sans bouton central, le badge de cet atelier n'est pas demandé.
 
+### Mode libre
+
+Le mode libre n'est **pas** un atelier enregistré : il ne compte ni dans le chemin ni dans les badges. Il est géré par le noyau (`startFreeMode`, `nextFreeExercise`, `playFreeExercise`).
+
+- **Ouverture :** `isFreeUnlocked()` est vrai quand chaque niveau de chaque atelier a au moins une étoile. Sans bouton central, cet atelier n'est pas demandé. Le bouton `#freeButton` n'est ajouté au menu qu'à ce moment-là, et la fenêtre de fin de partie l'annonce.
+- **Tirage :** à chaque exercice, un atelier au hasard (jamais deux fois de suite le même), puis un de ses niveaux au hasard. Le noyau appelle `start(api, level)` avec une copie du niveau où `rounds` vaut 1 : une seule manche. La mission remplace elle-même `rounds` par son nombre de tâches, elle est donc jouée en entier.
+- **Enchaînement :** quand l'exercice est réussi, `success()` lance l'exercice suivant au lieu de terminer la partie. `stopExercise()` nettoie l'exercice précédent sans arrêter le chronomètre.
+- **Compteurs :** réussites, série sans erreur (remise à 0 par `error()`) et record, enregistré dans le réglage `freeRecord`.
+- Le plateau porte `data-activity` et `data-level`, car le titre affiche seulement « Mode libre ». Les tests s'en servent pour savoir à quoi ils jouent.
+
 ### Sans bouton central
 
 Le bouton `#skipMiddle` s'affiche pour les ateliers qui ont `usesMiddle: true`. Il enregistre le réglage `noMiddle` :
@@ -144,7 +154,7 @@ Tout est enregistré dans le `localStorage` du navigateur, sous deux clés au fo
 | Clé | Contenu | Exemple |
 | --- | --- | --- |
 | `mouseClicGame.stars` | Meilleures étoiles par niveau, sous la clé `"atelier.niveau"` | `{"gauche.1": 3, "gauche.2": 2}` |
-| `mouseClicGame.settings` | Réglages : `noMiddle` (booléen), `demosSeen` (démos déjà vues) | `{"noMiddle": true, "demosSeen": {"gauche": true}}` |
+| `mouseClicGame.settings` | Réglages : `noMiddle` (booléen), `demosSeen` (démos déjà vues), `freeRecord` (record de série du mode libre) | `{"noMiddle": true, "demosSeen": {"gauche": true}, "freeRecord": 12}` |
 
 - En mode test, les clés sont préfixées par `test.`, pour ne jamais toucher à la vraie progression.
 - **Compatibilité :** avant les niveaux, les étoiles étaient enregistrées sous la seule clé `"gauche"`. `getStars` les compte encore comme des étoiles du niveau 1.
