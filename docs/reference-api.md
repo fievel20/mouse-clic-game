@@ -88,6 +88,7 @@ Pour ajouter un dessin, complétez `mouseSvg()` dans `js/core.js`. Les flèches 
 | Molette | `count` (nombre de lignes, sinon colonne de 7 cases), `named` (fichier à trouver par son nom) |
 | Barre de défilement | `count`, `named`, `tools` (outils autorisés : `'thumb'`, `'arrows'`, `'track'` ; tous si absent), `near` (cible juste hors de vue) |
 | Glisser-déposer | `kinds` (types de fichiers à trier : `'doc'`, `'image'`, `'music'`), `size` (labyrinthe de `size × size` cases, impair) |
+| Fenêtres | `mode` : `'toggle'` (double-clic sur la barre de titre), `'half'` (moitié d'écran et assistance d'ancrage), `'quarter'` (quart d'écran) |
 | Sélection de texte | `mode` : `'word'`, `'group'`, `'shortcuts'` (double et triple-clic) |
 | Sélection multiple | `mode` : `'ctrl'` (Ctrl + clic), `'shift'` (Maj + clic), `'lasso'` (rectangle de sélection) |
 | Ranger le bureau | `mission` : numéro de la mission dans `MISSIONS` (0, 1 ou 2). `rounds` est remplacé par le nombre de tâches. |
