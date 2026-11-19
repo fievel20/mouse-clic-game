@@ -284,18 +284,51 @@
         pointer(screen, 'pointerup', to);
     }
 
+    function click(el) {
+        if (el) el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 }));
+    }
+
+    function windowButton(name, cls) {
+        return $(`.win-window[data-name="${name}"] .win-btn.${cls}`);
+    }
+
+    function taskbarIcon(name) {
+        return $(`.win-task[data-name="${name}"]`);
+    }
+
+    // L'écran expose la tâche demandée (data-task) ; une tâche peut avoir une suite (then)
     function stepWindows(screen) {
         const task = JSON.parse(screen.dataset.task);
-        if (task.zone === 'max' || task.zone === 'normal') {
-            $(`.win-window[data-name="${task.name}"] .win-title`).dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+        if (task.then && $('.win-assist')) {
+            press($(`.win-assist .win-thumb[data-name="${task.then.name}"]`), 0);
             return;
         }
-        const thumb = task.assist && $(`.win-assist .win-thumb[data-name="${task.assist}"]`);
-        if (thumb) {
-            press(thumb, 0);
-            return;
+        const via = task.via || [];
+        switch (task.type) {
+            case 'maximize':
+            case 'restore':
+                if (via[0] === 'dblclick') {
+                    $(`.win-window[data-name="${task.name}"] .win-title`).dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+                } else {
+                    click(windowButton(task.name, 'max'));
+                }
+                break;
+            case 'minimize':
+                click(via.length && !via.includes('button') ? taskbarIcon(task.name) : windowButton(task.name, 'min'));
+                break;
+            case 'close':
+                click(windowButton(task.name, 'close'));
+                break;
+            case 'reopen':
+            case 'front':
+                click(taskbarIcon(task.name));
+                break;
+            case 'snap':
+                dragWindow(task.name, task.zone);
+                break;
+            default:
+                break;
         }
-        dragWindow(task.name, task.zone);
     }
 
     function step() {
@@ -599,15 +632,39 @@
         dragWindow(winTask.name, winTask.zone === 'left' ? 'right' : 'left');
         const wrongSide = errorsCount() === 1 && /Pas là/.test(feedback());
         dragWindow(winTask.name, winTask.zone);
-        const wrongThumb = $$('.win-assist .win-thumb').find((t) => t.dataset.name !== winTask.assist);
+        const wrongThumb = $$('.win-assist .win-thumb').find((t) => t.dataset.name !== winTask.then.name);
         press(wrongThumb, 0);
         log(wrongSide && errorsCount() === 2 && $('.win-assist') && $('#score').textContent.startsWith('Réussites : 0'),
             'Fenêtres niv. 2 : le mauvais bord, puis la mauvaise vignette, comptent une erreur');
+
+        // Fenêtres : les boutons sont actifs ; fermer une fenêtre est refusé dans cet atelier.
+        // (La fenêtre ancrée a « Rétrécir » à la place d'« Agrandir » : on vise la troisième fenêtre.)
+        const third = $$('.win-window').map((w) => w.dataset.name).find((n) => n !== winTask.name && n !== winTask.then.name);
+        click(windowButton(third, 'max'));
+        const maximized = $(`.win-window[data-name="${third}"]`).classList.contains('maximized');
+        click(windowButton(third, 'close'));
+        log(maximized && $(`.win-window[data-name="${third}"]`) && errorsCount() === 3,
+            'Fenêtres : les boutons sont actifs, et fermer une fenêtre utile est refusé');
 
         MouseGame.startActivity(byId('fenetres'), 3);
         const quarterTask = JSON.parse($('.win-screen').dataset.task);
         dragWindow(quarterTask.name, ['tl', 'tr', 'bl', 'br'].find((c) => c !== quarterTask.zone));
         log(errorsCount() === 1, 'Fenêtres niv. 3 : le mauvais coin compte une erreur');
+
+        // Boutons de fenêtre : le mauvais bouton est refusé, compte une erreur, et la fenêtre reste là
+        MouseGame.startActivity(byId('boutons-fenetre'), 1);
+        const buttonTask = JSON.parse($('.win-screen').dataset.task);
+        const wrongButton = { minimize: 'close', close: 'min', maximize: 'close', restore: 'close' }[buttonTask.type];
+        click(windowButton(buttonTask.name, wrongButton));
+        log(errorsCount() === 1 && $(`.win-window[data-name="${buttonTask.name}"]`) && /bon bouton/.test(feedback()),
+            'Boutons de fenêtre : le mauvais bouton est refusé et compte une erreur');
+
+        // Barre des tâches : rouvrir sans passer par la barre des tâches n'est pas possible ; le bouton au lieu de l'icône est refusé
+        MouseGame.startActivity(byId('barre-taches'), 3);
+        const iconTask = JSON.parse($('.win-screen').dataset.task);
+        click(windowButton(iconTask.name, 'min'));
+        log(errorsCount() === 1 && /barre des tâches/.test(feedback()) && !$(`.win-window[data-name="${iconTask.name}"]`).classList.contains('minimized'),
+            'Barre des tâches niv. 3 : réduire avec le bouton au lieu de l’icône est refusé');
 
         MouseGame.startActivity(byId('gauche'), 1);
         const statement = instruction();

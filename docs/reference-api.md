@@ -88,7 +88,37 @@ Pour ajouter un dessin, complétez `mouseSvg()` dans `js/core.js`. Les flèches 
 | Molette | `count` (nombre de lignes, sinon colonne de 7 cases), `named` (fichier à trouver par son nom) |
 | Barre de défilement | `count`, `named`, `tools` (outils autorisés : `'thumb'`, `'arrows'`, `'track'` ; tous si absent), `near` (cible juste hors de vue) |
 | Glisser-déposer | `kinds` (types de fichiers à trier : `'doc'`, `'image'`, `'music'`), `size` (labyrinthe de `size × size` cases, impair) |
+| Boutons de fenêtre | `mode` : `'named'` (le bouton est nommé), `'goal'` (le but est donné), `'crowded'` (4 fenêtres) |
+| Barre des tâches | `mode` : `'reduce'` (réduire puis rouvrir), `'switch'` (retrouver une fenêtre cachée), `'icons'` (réduire et rouvrir par les icônes) |
 | Fenêtres | `mode` : `'toggle'` (double-clic sur la barre de titre), `'half'` (moitié d'écran et assistance d'ancrage), `'quarter'` (quart d'écran) |
+| Défi fenêtres | `mode` : `'buttons'`, `'halves'`, `'all'` (gestes ajoutés au tirage, du plus simple au plus complet) |
+
+## Le petit écran Windows (`js/fenetres-ecran.js`)
+
+`WindowsScreen.create(game, { allow, notify })` dessine un écran façon Windows 11 dans `game.board` : des fenêtres avec leurs 3 boutons actifs, une barre des tâches avec une icône par fenêtre ouverte, le glisser par la barre de titre et l'ancrage (moitiés, quarts, assistance d'ancrage).
+
+Chaque geste devient un **événement** `{ type, name, via, zone, side }` :
+
+| `type` | Geste | `via` |
+| --- | --- | --- |
+| `minimize` | réduire dans la barre des tâches | `button` ou `taskbar` (clic sur l'icône de la fenêtre au premier plan) |
+| `maximize` | plein écran | `button`, `dblclick` (barre de titre) ou `snap` (glisser en haut de l'écran) |
+| `restore` | taille d'origine | `button` ou `dblclick` |
+| `close` | fermer | `button` |
+| `reopen` | faire réapparaître une fenêtre réduite | `taskbar` |
+| `front` | mettre une fenêtre au premier plan | `taskbar` ou `click` (clic sur la fenêtre) |
+| `snap` | moitié (`zone` : `left`, `right`) ou quart (`tl`, `tr`, `bl`, `br`) | — |
+| `assist` | fenêtre choisie dans l'assistance d'ancrage (`side`) | — |
+
+- `allow(event)` est appelé **avant** un geste (sauf `snap`) : renvoyer `false` l'annule.
+- `notify(event)` est appelé **après**.
+
+`WindowsScreen.judge(game, { strict, onDone, onStep })` fournit ces deux fonctions pour une tâche de la forme `{ type, name, via?, zone?, side?, then? }` :
+- les gestes dont le type est dans `strict` sont refusés, avec une erreur et un message clair, s'ils ne correspondent pas à la tâche ;
+- `then` enchaîne une deuxième étape (ancrer, puis choisir l'autre moitié) ;
+- `onDone` est appelé quand la tâche est réussie.
+
+L'écran expose la tâche dans `data-task`, pour le robot des tests.
 | Sélection de texte | `mode` : `'word'`, `'group'`, `'shortcuts'` (double et triple-clic) |
 | Sélection multiple | `mode` : `'ctrl'` (Ctrl + clic), `'shift'` (Maj + clic), `'lasso'` (rectangle de sélection) |
 | Ranger le bureau | `mission` : numéro de la mission dans `MISSIONS` (0, 1 ou 2). `rounds` est remplacé par le nombre de tâches. |

@@ -40,8 +40,8 @@ h2 {
 
 /* ---------- Menu ---------- */
 /* ---------- Chemin ---------- */
-/* 7 étapes par ligne ; une ligne sur deux se lit de droite à gauche */
-/* 7 cartes de 130 px et 6 liaisons de 10 px */
+/* 8 étapes par ligne ; une ligne sur deux se lit de droite à gauche */
+/* 8 cartes de 116 px et 7 liaisons de 6 px */
 .path {
     width: 970px;
     margin: 0 auto;
@@ -57,36 +57,37 @@ h2 {
 }
 
 .path .card {
-    width: 130px;
-    padding: 12px 3px;
+    width: 116px;
+    padding: 10px 2px;
+    gap: 6px;
     box-sizing: border-box;
     flex-shrink: 0;
 }
 
 .path .card .card-title {
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .path .card .card-text {
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .path .levels {
-    gap: 3px;
+    gap: 2px;
 }
 
 .path .level {
-    width: 36px;
-    font-size: 10px;
+    width: 33px;
+    font-size: 9px;
 }
 
 .path .level .stars {
-    font-size: 11px;
+    font-size: 10px;
 }
 
 /* Liaison pointillée entre deux étapes, verte une fois l'étape franchie */
 .connector {
-    width: 10px;
+    width: 6px;
     align-self: center;
     border-top: 4px dotted #c8c8c8;
 }
@@ -100,13 +101,13 @@ h2 {
 .turn {
     width: 0;
     height: 22px;
-    /* Au milieu de la carte du bout de ligne (130 px de large) */
-    margin: 0 63px 0 auto;
+    /* Au milieu de la carte du bout de ligne (116 px de large) */
+    margin: 0 56px 0 auto;
     border-right: 4px dotted #c8c8c8;
 }
 
 .turn.left {
-    margin: 0 auto 0 63px;
+    margin: 0 auto 0 56px;
 }
 
 .card {
@@ -134,7 +135,7 @@ h2 {
 /* Souris un peu plus petite sur le chemin, pour qu'il tienne dans l'écran */
 .path .card .mouse-svg {
     width: auto !important;
-    height: 60px;
+    height: 52px;
 }
 
 .card .step {
@@ -147,6 +148,13 @@ h2 {
     top: 6px;
     right: 8px;
     font-size: 22px;
+}
+
+/* Cartes étroites du chemin : la médaille, plus petite, ne touche pas « Étape N » */
+.path .card-badge {
+    top: 3px;
+    right: 3px;
+    font-size: 14px;
 }
 
 /* ---------- Badges ---------- */
@@ -162,13 +170,13 @@ h2 {
 
 .medals {
     display: flex;
-    gap: 4px;
+    gap: 3px;
 }
 
-/* 32 px : les 13 médailles, le diplôme et le bouton du mode libre tiennent sur une ligne */
+/* 28 px : les 16 médailles, le diplôme et le bouton du mode libre tiennent sur une ligne */
 .medal {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -179,7 +187,7 @@ h2 {
 }
 
 .medal .mouse-svg {
-    width: 17px !important;
+    width: 14px !important;
     height: auto;
     opacity: 0.35;
 }
@@ -1011,6 +1019,44 @@ h2 {
     height: 18px;
 }
 
+/* Une icône par fenêtre ouverte ; soulignée en bleu pour la fenêtre au premier plan */
+.win-task {
+    position: relative;
+    width: 36px;
+    height: 26px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    cursor: default;
+}
+
+.win-task:hover {
+    background-color: #e3e3ea;
+}
+
+.win-task::after {
+    content: '';
+    position: absolute;
+    bottom: 1px;
+    width: 6px;
+    height: 3px;
+    border-radius: 2px;
+    background-color: #808080;
+}
+
+.win-task.active {
+    background-color: #ececf2;
+}
+
+.win-task.active::after {
+    width: 16px;
+    background-color: #1a5fb4;
+}
+
 .win-window {
     position: absolute;
     display: flex;
@@ -1021,7 +1067,7 @@ h2 {
     border: 1px solid #c8c8d4;
     border-radius: 8px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-    transition: left 0.15s, top 0.15s, width 0.15s, height 0.15s;
+    transition: left 0.15s, top 0.15s, width 0.15s, height 0.15s, opacity 0.2s, transform 0.2s;
 }
 
 /* Pendant un glisser, la fenêtre suit la souris sans retard */
@@ -1056,11 +1102,37 @@ h2 {
     display: flex;
 }
 
-.win-buttons span {
-    width: 34px;
-    text-align: center;
-    font-size: 12px;
-    color: #555;
+/* Boutons de la fenêtre : Réduire, Agrandir / Rétrécir, Fermer */
+.win-btn {
+    width: 38px;
+    height: 30px;
+    padding: 0;
+    font-family: inherit;
+    font-size: 13px;
+    color: #333;
+    background: none;
+    border: none;
+    cursor: default;
+}
+
+.win-btn:hover {
+    background-color: #e3e3ea;
+}
+
+.win-btn.close:hover {
+    color: #fff;
+    background-color: #e81123;
+}
+
+/* Fenêtre réduite : elle descend vers la barre des tâches et disparaît */
+.win-window.minimized {
+    opacity: 0;
+    transform: translateY(60%) scale(0.3);
+    pointer-events: none;
+}
+
+.win-window {
+    transform-origin: bottom center;
 }
 
 .win-body {
@@ -1496,11 +1568,44 @@ h2 {
     border: 1px solid #c8c8d4;
     border-radius: 5px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-    transition: left 0.9s ease-in-out, top 0.9s ease-in-out, width 0.5s, height 0.5s;
+    transition: left 0.9s ease-in-out, top 0.9s ease-in-out, width 0.5s, height 0.5s, opacity 0.3s, transform 0.3s;
+    transform-origin: bottom center;
 }
 
 .demo-win.max {
     border-radius: 0;
+}
+
+/* Fenêtre réduite dans la démo : elle descend vers la barre des tâches */
+.demo-win.min {
+    opacity: 0;
+    transform: translateY(60%) scale(0.3);
+}
+
+.demo-win-btns {
+    float: right;
+    display: flex;
+}
+
+.demo-win-btns span {
+    width: 18px;
+    text-align: center;
+    font-size: 9px;
+}
+
+.demo-win-btns .b-close.hover {
+    color: #fff;
+    background-color: #e81123;
+}
+
+.demo-task {
+    display: inline-flex;
+    margin: 0 4px;
+}
+
+.demo-task .icon {
+    width: 11px;
+    height: 11px;
 }
 
 .demo-win-title {
@@ -1518,6 +1623,9 @@ h2 {
     right: 0;
     bottom: 0;
     height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: rgba(255, 255, 255, 0.85);
 }
 
