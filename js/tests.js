@@ -659,6 +659,29 @@
         log(errorsCount() === 1 && $(`.win-window[data-name="${buttonTask.name}"]`) && /bon bouton/.test(feedback()),
             'Boutons de fenêtre : le mauvais bouton est refusé et compte une erreur');
 
+        // « Faites disparaître … dans la barre des tâches » : l'icône de la barre des tâches est aussi acceptée.
+        // Les tâches sont tirées au hasard : on relance jusqu'à tomber sur « réduire ».
+        const minimizeTask = async (level) => {
+            for (let i = 0; i < 100; i++) {
+                MouseGame.startActivity(byId('boutons-fenetre'), level);
+                const t = JSON.parse($('.win-screen').dataset.task);
+                if (t.type === 'minimize') {
+                    // L'icône d'une fenêtre ne la réduit que si elle est au premier plan
+                    click(taskbarIcon(t.name));
+                    if (!$(`.win-window[data-name="${t.name}"]`).classList.contains('minimized')) click(taskbarIcon(t.name));
+                    await wait(30);
+                    return t;
+                }
+            }
+            return null;
+        };
+        const goalTask = await minimizeTask(2);
+        log(goalTask && $('#score').textContent.startsWith('Réussites : 1') && errorsCount() === 0,
+            'Boutons de fenêtre niv. 2 : « faire disparaître » avec l’icône de la barre des tâches est accepté');
+        const namedTask = await minimizeTask(1);
+        log(namedTask && errorsCount() === 0 && /Ça marche aussi avec la barre des tâches/.test(feedback()),
+            'Boutons de fenêtre niv. 1 : l’icône au lieu du bouton nommé donne un conseil, sans erreur');
+
         // Barre des tâches : rouvrir sans passer par la barre des tâches n'est pas possible ; le bouton au lieu de l'icône est refusé
         MouseGame.startActivity(byId('barre-taches'), 3);
         const iconTask = JSON.parse($('.win-screen').dataset.task);
@@ -729,6 +752,30 @@
         $('#demoGo').click();
         log(opened && /Niveau 2/.test($('#gameTitle').textContent) && $('#score').textContent.startsWith('Réussites : 0')
             && $$('.cell.target').length === 1, 'Revoir la démo puis reprendre la partie');
+
+        // Chaque atelier a sa scène de démo
+        const missing = MouseGame.activities.filter((a) => !MouseDemo.has(a.id)).map((a) => a.id);
+        log(!missing.length, `Chaque atelier a sa démonstration${missing.length ? ' (manque : ' + missing.join(', ') + ')' : ''}`);
+
+        // Une démo introuvable (ancien demo.js gardé en mémoire, par exemple) ne bloque pas le joueur
+        let closed = false;
+        MouseDemo.play({ id: 'atelier-sans-scene', title: 'Test' }, () => { closed = true; });
+        const deadline = Date.now() + 3000;
+        while (modal.dataset.state === 'playing' && Date.now() < deadline) await wait(20);
+        const failedNicely = modal.dataset.state === 'failed' && /rechargez la page/.test($('#demoCaption').textContent);
+        $('#demoGo').click();
+        log(failedNicely && closed && modal.style.display === 'none',
+            'Démo introuvable : un message l’explique et « C’est parti ! » reste utilisable');
+    }
+
+    // Tous les fichiers de index.html portent le même numéro de version (?v=…) :
+    // après une mise à jour, le navigateur les recharge tous ensemble
+    function checkVersions() {
+        const urls = [...document.querySelectorAll('script[src], link[rel="stylesheet"]')].map((el) => el.src || el.href)
+            .filter((url) => url.startsWith(location.origin));
+        const versions = new Set(urls.map((url) => new URL(url).searchParams.get('v')));
+        log(urls.length > 0 && versions.size === 1 && !versions.has(null),
+            `Même numéro de version pour les ${urls.length} fichiers du jeu (${[...versions].join(', ')})`);
     }
 
     async function run() {
@@ -744,6 +791,7 @@
         checkWithoutMiddle();
         await scenarios();
         await demos();
+        checkVersions();
         MouseGame.resetProgress();
         MouseGame.showMenu();
         const passed = results.filter((r) => r.ok).length;

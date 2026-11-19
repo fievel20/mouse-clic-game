@@ -36,7 +36,20 @@
                 game.success(nextRound, 1400);
             }
         });
-        ui = WindowsScreen.create(game, { allow: judge.allow, notify: judge.notify });
+        ui = WindowsScreen.create(game, {
+            allow(event) {
+                const task = judge.task;
+                // Niveau 1 : la consigne nomme le bouton ─. Réduire par l'icône de la barre des tâches marche aussi
+                // sous Windows : ce n'est pas une erreur, on le dit simplement
+                if (level.mode === 'named' && task && task.type === 'minimize' && event.type === 'minimize'
+                    && event.name === task.name && event.via === 'taskbar') {
+                    game.setFeedback('Ça marche aussi avec la barre des tâches ! Ici, entraînez-vous avec le bouton « Réduire » (─).');
+                    return false;
+                }
+                return judge.allow(event);
+            },
+            notify: judge.notify
+        });
 
         function nextRound() {
             const count = { named: 1, goal: 2, crowded: 4 }[level.mode];
@@ -49,7 +62,10 @@
             // (ses boutons restent visibles, les fenêtres étant décalées)
             if (level.mode !== 'crowded' || maximized) ui.front(ui.byName(target));
             const action = game.shuffle(['minimize', maximized ? 'restore' : 'maximize', 'close'])[0];
-            judge.set({ type: action, name: target, via: ['button'] });
+            // Quand la consigne donne le but (« faites disparaître… dans la barre des tâches »),
+            // cliquer sur l'icône de la barre des tâches est aussi une bonne réponse, comme sous Windows
+            const via = action === 'minimize' && level.mode !== 'named' ? ['button', 'taskbar'] : ['button'];
+            judge.set({ type: action, name: target, via });
             ui.setTask(judge.task);
             game.setHint('left');
             game.setInstruction(level.mode === 'named'
@@ -97,7 +113,8 @@
                 if (r === 0) ui.open(randomApps(game, 1));
                 const win = ui.windows[0];
                 if (!win.minimized) {
-                    setTask({ type: 'minimize', name: win.name, via: ['button'] },
+                    // L'icône de la barre des tâches réduit aussi la fenêtre : les deux sont acceptés
+                    setTask({ type: 'minimize', name: win.name, via: ['button', 'taskbar'] },
                         `Réduisez « ${win.name} » avec son bouton « Réduire » (─).`);
                 } else {
                     setTask({ type: 'reopen', name: win.name, via: ['taskbar'] },

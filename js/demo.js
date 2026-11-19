@@ -597,16 +597,26 @@ window.MouseDemo = (() => {
     async function run() {
         token++;
         scene.innerHTML = '';
+        captionElement.textContent = '';
         carried = null;
         cursor = put(CURSOR, 40, 170, 'demo-cursor');
         replayButton.disabled = true;
         try {
             await wait(300);
+            if (!SCENES[activity.id]) {
+                // Arrive surtout juste après une mise à jour, si le navigateur a gardé en mémoire un ancien demo.js
+                throw new Error(`pas de scène pour « ${activity.id} »`);
+            }
             await SCENES[activity.id]();
             replayButton.disabled = false;
             modal.dataset.state = 'finished';
         } catch (err) {
-            if (!(err instanceof Cancelled)) throw err;
+            if (err instanceof Cancelled) return;
+            // Une démo en panne ne doit jamais bloquer le joueur : on l'explique, et « C'est parti ! » reste utilisable
+            console.error('Démonstration impossible :', err);
+            scene.innerHTML = '';
+            captionElement.textContent = 'La démonstration ne peut pas s’afficher. Si le jeu vient d’être mis à jour, rechargez la page (touches Ctrl + F5). Vous pouvez aussi cliquer sur « C’est parti ! ».';
+            modal.dataset.state = 'failed';
         }
     }
 

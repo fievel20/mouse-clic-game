@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mouse Clic Game</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- ?v=… : numéro de version, le même pour tous les fichiers. À changer à chaque mise en ligne,
+         pour que les navigateurs rechargent tout ensemble (voir docs/deploiement.md). -->
+    <link rel="stylesheet" href="style.css?v=2026-11-19">
 </head>
 <body>
 
@@ -72,26 +74,27 @@
 </div>
 
 <!-- Scripts classiques (pas de modules) : le jeu s'ouvre aussi par double-clic sur index.html -->
-<script src="js/core.js"></script>
-<script src="js/demo.js"></script>
-<script src="js/ateliers/survol.js"></script>
-<script src="js/ateliers/clics.js"></script>
-<script src="js/ateliers/double-clic.js"></script>
-<script src="js/ateliers/molette.js"></script>
-<script src="js/ateliers/barre.js"></script>
-<script src="js/ateliers/glisser.js"></script>
-<script src="js/fenetres-ecran.js"></script>
-<script src="js/ateliers/boutons-fenetre.js"></script>
-<script src="js/ateliers/fenetres.js"></script>
-<script src="js/ateliers/selection.js"></script>
-<script src="js/ateliers/multiple.js"></script>
-<script src="js/ateliers/mission.js"></script>
+<script src="js/core.js?v=2026-11-19"></script>
+<script src="js/demo.js?v=2026-11-19"></script>
+<script src="js/ateliers/survol.js?v=2026-11-19"></script>
+<script src="js/ateliers/clics.js?v=2026-11-19"></script>
+<script src="js/ateliers/double-clic.js?v=2026-11-19"></script>
+<script src="js/ateliers/molette.js?v=2026-11-19"></script>
+<script src="js/ateliers/barre.js?v=2026-11-19"></script>
+<script src="js/ateliers/glisser.js?v=2026-11-19"></script>
+<script src="js/fenetres-ecran.js?v=2026-11-19"></script>
+<script src="js/ateliers/boutons-fenetre.js?v=2026-11-19"></script>
+<script src="js/ateliers/fenetres.js?v=2026-11-19"></script>
+<script src="js/ateliers/selection.js?v=2026-11-19"></script>
+<script src="js/ateliers/multiple.js?v=2026-11-19"></script>
+<script src="js/ateliers/mission.js?v=2026-11-19"></script>
 <script>
     MouseGame.start();
     // index.html?test : joue automatiquement tous les niveaux
     if (MouseGame.isTest) {
         const tests = document.createElement('script');
-        tests.src = 'js/tests.js';
+        // Même numéro de version que les autres fichiers (voir docs/deploiement.md)
+        tests.src = 'js/tests.js' + new URL(document.querySelector('script[src*="core.js"]').src).search;
         document.body.appendChild(tests);
     }
 </script>

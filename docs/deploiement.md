@@ -26,6 +26,7 @@ Pendant le développement, rechargez sans le cache (**Ctrl + F5**) après chaque
 2. Les changements ont été essayés à la main, avec une vraie souris.
 3. Le menu tient dans un écran de 1024 × 768.
 4. `README.md` et `docs/` sont à jour.
+5. Si un fichier CSS ou JavaScript a changé : le **numéro de version** a été changé dans `index.html` (voir ci-dessous).
 
 **Attention aux branches empilées.** Si une branche part d'une autre qui n'est pas encore fusionnée, sa pull request contient aussi les changements de la première. Fusionnez dans l'ordre, ou fusionnez seulement la dernière. Avant de créer une branche, vérifiez que la précédente est bien dans `main` :
 
@@ -43,6 +44,20 @@ Le jeu est publié sur https://fievel20.github.io/mouse-clic-game/ (réglage *Se
 
 - **À chaque fusion dans `main`**, GitHub lance le workflow « pages build and deployment ». On peut le suivre dans l'onglet **Actions** du dépôt.
 - La publication prend **quelques minutes**. Quand GitHub Actions est ralenti, elle peut rester « en attente » bien plus longtemps. Si elle semble bloquée, ouvrez-la dans l'onglet Actions, puis cliquez sur *Cancel workflow* et *Re-run all jobs*. L'état des services GitHub est sur https://www.githubstatus.com/.
-- GitHub Pages demande aux navigateurs de garder les fichiers en mémoire jusqu'à 10 minutes. **Si l'ancienne version s'affiche encore** après la publication, faites **Ctrl + F5**.
+- GitHub Pages demande aux navigateurs de garder **chaque fichier** en mémoire jusqu'à 10 minutes, chacun de son côté. **Si l'ancienne version s'affiche encore** après la publication, faites **Ctrl + F5**.
+
+### Le numéro de version (`?v=…`)
+
+Juste après une mise en ligne, un navigateur peut mélanger les versions : un nouveau `index.html` avec un ancien `demo.js` gardé en mémoire, par exemple. C'est arrivé : les démonstrations des nouveaux ateliers ne s'affichaient pas, faute de scène dans l'ancien `demo.js`.
+
+Pour l'éviter, `index.html` ajoute à chaque fichier CSS et JavaScript **le même numéro de version** :
+
+```html
+<script src="js/core.js?v=2026-11-19"></script>
+```
+
+**À chaque mise en ligne qui modifie un fichier CSS ou JavaScript, changez ce numéro partout dans `index.html`** (par exemple la date du jour). Les navigateurs voient alors de nouvelles adresses et rechargent tous les fichiers ensemble. Le test « Même numéro de version pour les … fichiers du jeu » vérifie qu'aucun fichier n'a été oublié.
+
+Par sécurité, si une démonstration est quand même introuvable, la fenêtre de démo ne se bloque plus : elle propose de recharger la page, et le bouton « C'est parti ! » reste utilisable.
 
 Il n'y a rien à compiler : GitHub Pages sert les fichiers du dépôt tels quels. **Tout fichier ajouté à la racine ou dans `js/` est donc public**, y compris `js/tests.js`.
