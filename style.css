@@ -423,6 +423,9 @@ h2 {
 .board {
     position: relative;
     margin: 0 auto 20px;
+    /* Les z-index des ateliers (fenêtres, menus, bulles) restent entre eux, dans le plateau :
+       ils ne peuvent jamais passer au-dessus de la fenêtre de résultat ou de la démo */
+    isolation: isolate;
 }
 
 .stats {

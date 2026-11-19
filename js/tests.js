@@ -432,6 +432,14 @@
         if (isLastLevel && !detail.includes('Nouveau badge')) problems.push('badge non annoncé');
         if (isLastLevel && isLastActivity && !detail.includes('Tous les badges')) problems.push('diplôme non annoncé');
         if (isLastLevel && isLastActivity && !detail.includes('mode libre est débloqué')) problems.push('mode libre non annoncé');
+        // Aucun élément du plateau (fenêtre, menu, bulle) ne doit passer au-dessus de la fenêtre de résultat
+        const above = $$('#board .win-window, #board .mi-window, #board .context-menu, #board .tooltip, #board .win-assist').find((el) => {
+            const r = el.getBoundingClientRect();
+            if (!r.width || !r.height) return false;
+            const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+            return hit && $('#board').contains(hit);
+        });
+        if (above) problems.push(`un élément du plateau (${above.className}) passe au-dessus de la fenêtre de résultat`);
         log(errors === 0 && !problems.length, `${name} : ${errors} erreur(s)${problems.length ? ', ' + problems.join(', ') : ''}`);
     }
 
