@@ -262,7 +262,48 @@
         }
     }
 
+    // ---------- Atelier fenêtres : l'écran expose la tâche dans data-task ----------
+
+    // Point de l'écran qui déclenche une zone d'ancrage (bord ou coin)
+    function zonePoint(zone) {
+        const r = $('.win-screen').getBoundingClientRect();
+        const x = { left: 3, tl: 5, bl: 5, right: 637, tr: 635, br: 635 }[zone];
+        const y = { left: 150, right: 150, tl: 5, tr: 5, bl: 325, br: 325 }[zone];
+        return { x: r.left + x, y: r.top + y };
+    }
+
+    // Attrape une fenêtre par sa barre de titre et la lâche dans une zone
+    function dragWindow(name, zone) {
+        const screen = $('.win-screen');
+        const title = $(`.win-window[data-name="${name}"] .win-title`);
+        const from = center(title);
+        const to = zonePoint(zone);
+        pointer(title, 'pointerdown', from);
+        pointer(screen, 'pointermove', { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 });
+        pointer(screen, 'pointermove', to);
+        pointer(screen, 'pointerup', to);
+    }
+
+    function stepWindows(screen) {
+        const task = JSON.parse(screen.dataset.task);
+        if (task.zone === 'max' || task.zone === 'normal') {
+            $(`.win-window[data-name="${task.name}"] .win-title`).dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+            return;
+        }
+        const thumb = task.assist && $(`.win-assist .win-thumb[data-name="${task.assist}"]`);
+        if (thumb) {
+            press(thumb, 0);
+            return;
+        }
+        dragWindow(task.name, task.zone);
+    }
+
     function step() {
+        const winScreen = $('#board .win-screen');
+        if (winScreen) {
+            stepWindows(winScreen);
+            return;
+        }
         const missionDesk = $('.mi-desk');
         if (missionDesk) {
             stepMission(missionDesk);
@@ -385,8 +426,8 @@
         const isLastActivity = activity === MouseGame.activities[MouseGame.activities.length - 1];
         const problems = [];
         if (!isLastLevel && !detail.includes('débloqué')) problems.push('niveau suivant non débloqué');
-        // Niveau 1 réussi : l'atelier suivant du chemin s'ouvre
-        if (number === 1 && !isLastActivity && !detail.includes('Nouvel atelier')) problems.push('atelier suivant non annoncé');
+        // Atelier terminé : l'atelier suivant du chemin est proposé
+        if (isLastLevel && !isLastActivity && $('#nextActivityButton').classList.contains('hidden')) problems.push('atelier suivant non proposé');
         // Dernier niveau réussi : badge gagné
         if (isLastLevel && !detail.includes('Nouveau badge')) problems.push('badge non annoncé');
         if (isLastLevel && isLastActivity && !detail.includes('Tous les badges')) problems.push('diplôme non annoncé');
@@ -398,15 +439,20 @@
     // ajouter un atelier ne demande pas de les modifier
     const activities = () => MouseGame.activities;
 
-    // Chemin de progression : au départ, seul le premier atelier est ouvert
+    // Au départ : tous les ateliers sont ouverts, mais on commence chacun par le niveau 1
     function checkStartOfPath() {
         MouseGame.showMenu();
         const total = activities().length;
-        const first = activities()[0].title;
-        const locked = $$('.path .card.locked').length;
-        const here = $('.path .card.here .card-title');
-        log(locked === total - 1 && here && here.textContent === first
-            && $('.badges-title').textContent.includes(`0 / ${total}`), `Chemin : au départ, seul « ${first} » est ouvert`);
+        const cards = $$('.path .card');
+        const level1Open = cards.every((card) => !card.querySelector('.level[data-level="1"]').disabled);
+        const othersLocked = cards.every((card) => card.querySelectorAll('.level:disabled').length === 2);
+        log(cards.length === total && level1Open && othersLocked && $('.badges-title').textContent.includes(`0 / ${total}`),
+            `Au départ, les ${total} ateliers sont ouverts, chacun au niveau 1`);
+        // On peut commencer par n'importe quel atelier, par exemple le dernier du chemin
+        cards[cards.length - 1].click();
+        log(/Niveau 1/.test($('#gameTitle').textContent) && $('#board').dataset.activity === activities()[total - 1].id,
+            'On peut commencer par n’importe quel atelier, au niveau 1');
+        MouseGame.showMenu();
         log(!$('#freeButton'), 'Mode libre : invisible tant que tous les niveaux ne sont pas terminés');
     }
 
@@ -432,50 +478,29 @@
         MouseGame.showMenu();
     }
 
-    // Ateliers déjà commencés (progression d'avant un nouvel atelier) : ils restent ouverts
-    function checkExistingProgress() {
-        const started = ['gauche', 'droit', 'double'];
-        MouseGame.resetProgress();
-        try {
-            localStorage.setItem('test.mouseClicGame.stars', JSON.stringify({ 'gauche.1': 3, 'droit.1': 3, 'double.1': 2 }));
-        } catch (e) { /* stockage indisponible */ }
-        MouseGame.showMenu();
-        const expected = activities().filter((a, i) => i === 0 || started.includes(a.id)).map((a) => a.title);
-        const open = $$('.path .card:not(.locked) .card-title').map((t) => t.textContent);
-        const here = $('.path .card.here .card-title');
-        log(open.join(',') === expected.join(',') && here && here.textContent === expected[0],
-            `Progression existante : les ateliers commencés restent ouverts, « ${expected[0]} » est proposé`);
-        MouseGame.resetProgress();
-    }
-
     // Après tous les niveaux : tous les badges, diplôme, plus aucun atelier verrouillé, chemin tout vert
     function checkEndOfPath() {
         MouseGame.showMenu();
         const total = activities().length;
         // Une liaison entre deux cartes d'une même ligne ; un virage entre deux lignes
         const links = total - $$('.path-row').length;
-        log($('.badges-title').textContent.includes(`${total} / ${total}`) && $('#badges .diploma') && !$('.path .card.locked')
+        log($('.badges-title').textContent.includes(`${total} / ${total}`) && $('#badges .diploma') && !$('.path .level:disabled')
             && $$('.path .card-badge').length === total && $$('.connector.done').length === links
             && $$('.turn').every((turn) => turn.classList.contains('done')),
         `Chemin : ${total} badges sur ${total}, diplôme et chemin entièrement vert`);
     }
 
-    // Sans bouton central : l'atelier est franchi, et son badge n'est plus demandé
+    // Sans bouton central : l'atelier est passé, et son badge n'est plus demandé
     function checkWithoutMiddle() {
-        const centralIndex = activities().findIndex((a) => a.id === 'central');
-        const before = {};
-        activities().slice(0, centralIndex).forEach((a) => { before[`${a.id}.1`] = 3; });
         MouseGame.resetProgress();
         try {
-            localStorage.setItem('test.mouseClicGame.stars', JSON.stringify(before));
             localStorage.setItem('test.mouseClicGame.settings', JSON.stringify({ noMiddle: true }));
         } catch (e) { /* stockage indisponible */ }
         MouseGame.showMenu();
-        const next = activities()[centralIndex + 1].title;
-        const here = $('.path .card.here .card-title');
         const remaining = activities().length - 1;
-        log(here && here.textContent === next && $('.badges-title').textContent.includes(`0 / ${remaining}`),
-            `Chemin sans bouton central : « ${next} » s’ouvre et il reste ${remaining} badges`);
+        const central = $$('.path .card').find((card) => card.querySelector('.card-title').textContent === 'Bouton central');
+        log(central.classList.contains('skipped') && $('.badges-title').textContent.includes(`0 / ${remaining}`),
+            `Sans bouton central : l’atelier est passé et il reste ${remaining} badges`);
     }
 
     // Scénarios d'erreur : on vérifie que le jeu compte bien les erreurs
@@ -560,6 +585,22 @@
         log(refusedDelete && errorsCount() === 2 && missionIcon('plage.jpg') && $('#score').textContent.startsWith('Réussites : 0'),
             'Mission : supprimer ou ranger hors de la tâche en cours est refusé et compte une erreur');
 
+        // Fenêtres : le mauvais bord, puis la mauvaise fenêtre dans les vignettes, comptent une erreur chacun
+        MouseGame.startActivity(byId('fenetres'), 2);
+        const winTask = JSON.parse($('.win-screen').dataset.task);
+        dragWindow(winTask.name, winTask.zone === 'left' ? 'right' : 'left');
+        const wrongSide = errorsCount() === 1 && /Pas là/.test(feedback());
+        dragWindow(winTask.name, winTask.zone);
+        const wrongThumb = $$('.win-assist .win-thumb').find((t) => t.dataset.name !== winTask.assist);
+        press(wrongThumb, 0);
+        log(wrongSide && errorsCount() === 2 && $('.win-assist') && $('#score').textContent.startsWith('Réussites : 0'),
+            'Fenêtres niv. 2 : le mauvais bord, puis la mauvaise vignette, comptent une erreur');
+
+        MouseGame.startActivity(byId('fenetres'), 3);
+        const quarterTask = JSON.parse($('.win-screen').dataset.task);
+        dragWindow(quarterTask.name, ['tl', 'tr', 'bl', 'br'].find((c) => c !== quarterTask.zone));
+        log(errorsCount() === 1, 'Fenêtres niv. 3 : le mauvais coin compte une erreur');
+
         MouseGame.startActivity(byId('gauche'), 1);
         const statement = instruction();
         press($('.cell.target'), 2);
@@ -636,7 +677,6 @@
         checkEndOfPath();
         await checkFreeMode();
         checkWithoutMiddle();
-        checkExistingProgress();
         await scenarios();
         await demos();
         MouseGame.resetProgress();

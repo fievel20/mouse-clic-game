@@ -79,7 +79,7 @@ Points à retenir :
 - **Tout le code est dans une fonction appelée immédiatement** `(() => { … })()`, pour ne rien ajouter à l'espace global.
 - **Le plateau est construit dans `game.board`.** Le noyau le vide à chaque nouvelle partie.
 - **Les réglages de difficulté sont dans `levels`** (ici `size`), et non dans le code. Pour rendre un niveau plus dur, il suffit de changer un nombre.
-- **`order: 15`** place l'atelier entre « Clic gauche » (10) et « Clic droit » (20). Les joueurs qui avaient déjà commencé les ateliers suivants les gardent ouverts.
+- **`order: 15`** place l'atelier entre « Clic gauche » (10) et « Clic droit » (20) sur le chemin. Comme tous les ateliers sont ouverts, cela ne bloque personne.
 - **Si l'atelier pose une minuterie**, utilisez `game.later(…)`. **S'il écoute `document` ou `window`**, retirez l'écouteur dans `game.onCleanup(…)`. Voir [Architecture](architecture.md#arrêt-propre--runid-later-et-oncleanup).
 
 ## 2. Le style : `style.css`

@@ -39,11 +39,11 @@ h2 {
 }
 
 /* ---------- Menu ---------- */
-/* ---------- Chemin de progression ---------- */
-/* 4 étapes par ligne ; une ligne sur deux se lit de droite à gauche */
-/* 6 cartes de 148 px et 5 liaisons de 16 px */
+/* ---------- Chemin ---------- */
+/* 7 étapes par ligne ; une ligne sur deux se lit de droite à gauche */
+/* 7 cartes de 130 px et 6 liaisons de 10 px */
 .path {
-    width: 968px;
+    width: 970px;
     margin: 0 auto;
 }
 
@@ -57,18 +57,18 @@ h2 {
 }
 
 .path .card {
-    width: 148px;
-    padding: 12px 4px;
+    width: 130px;
+    padding: 12px 3px;
     box-sizing: border-box;
     flex-shrink: 0;
 }
 
 .path .card .card-title {
-    font-size: 17px;
+    font-size: 16px;
 }
 
 .path .card .card-text {
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .path .levels {
@@ -76,17 +76,17 @@ h2 {
 }
 
 .path .level {
-    width: 42px;
-    font-size: 11px;
+    width: 36px;
+    font-size: 10px;
 }
 
 .path .level .stars {
-    font-size: 12px;
+    font-size: 11px;
 }
 
 /* Liaison pointillée entre deux étapes, verte une fois l'étape franchie */
 .connector {
-    width: 16px;
+    width: 10px;
     align-self: center;
     border-top: 4px dotted #c8c8c8;
 }
@@ -100,13 +100,13 @@ h2 {
 .turn {
     width: 0;
     height: 22px;
-    /* Au milieu de la carte du bout de ligne (148 px de large) */
-    margin: 0 72px 0 auto;
+    /* Au milieu de la carte du bout de ligne (130 px de large) */
+    margin: 0 63px 0 auto;
     border-right: 4px dotted #c8c8c8;
 }
 
 .turn.left {
-    margin: 0 auto 0 72px;
+    margin: 0 auto 0 63px;
 }
 
 .card {
@@ -126,7 +126,7 @@ h2 {
     transition: transform 0.1s;
 }
 
-.card:hover:not(.locked) {
+.card:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
@@ -139,29 +139,6 @@ h2 {
 
 .card .step {
     font-size: 13px;
-    color: #808080;
-}
-
-.card .step.here {
-    color: #4caf50;
-    font-weight: bold;
-}
-
-.card.here {
-    border-color: #4caf50;
-}
-
-.card.locked {
-    cursor: default;
-    background-color: #ececf2;
-    box-shadow: none;
-}
-
-.card.locked .mouse-svg {
-    opacity: 0.35;
-}
-
-.card.locked .card-title {
     color: #808080;
 }
 
@@ -185,13 +162,13 @@ h2 {
 
 .medals {
     display: flex;
-    gap: 6px;
+    gap: 4px;
 }
 
-/* 34 px : les 12 médailles, le diplôme et le bouton du mode libre tiennent sur une ligne */
+/* 32 px : les 13 médailles, le diplôme et le bouton du mode libre tiennent sur une ligne */
 .medal {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -994,6 +971,166 @@ h2 {
     background-color: #9cc7f5;
 }
 
+/* Fenêtres façon Windows 11 */
+.win-screen {
+    position: relative;
+    width: 640px;
+    height: 360px;
+    overflow: hidden;
+    text-align: left;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, #dfe7f5, #c9d6ee);
+    user-select: none;
+}
+
+.win-desktop {
+    position: absolute;
+    inset: 0 0 30px 0;
+}
+
+.win-taskbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-top: 1px solid #dcdce6;
+}
+
+.win-taskbar .icon {
+    width: 18px;
+    height: 18px;
+}
+
+.win-window {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+    background-color: #ffffff;
+    border: 1px solid #c8c8d4;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    transition: left 0.15s, top 0.15s, width 0.15s, height 0.15s;
+}
+
+/* Pendant un glisser, la fenêtre suit la souris sans retard */
+.win-window.dragging {
+    transition: none;
+    opacity: 0.92;
+}
+
+.win-window.maximized {
+    border-radius: 0;
+}
+
+.win-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 30px;
+    flex-shrink: 0;
+    padding-left: 10px;
+    font-size: 14px;
+    background-color: #f3f3f7;
+    cursor: default;
+}
+
+.win-title .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.win-buttons {
+    margin-left: auto;
+    display: flex;
+}
+
+.win-buttons span {
+    width: 34px;
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+}
+
+.win-body {
+    flex: 1;
+    padding: 14px;
+}
+
+.win-body div {
+    height: 10px;
+    margin-bottom: 10px;
+    background-color: #ececf2;
+    border-radius: 5px;
+}
+
+.win-body div:nth-child(2) {
+    width: 70%;
+}
+
+.win-body div:nth-child(3) {
+    width: 85%;
+}
+
+/* Aperçu translucide de la place que prendra la fenêtre */
+.win-preview {
+    position: absolute;
+    z-index: 999;
+    box-sizing: border-box;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.45);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+}
+
+/* Assistance d'ancrage : les autres fenêtres proposées pour l'autre moitié */
+.win-assist {
+    position: absolute;
+    z-index: 1000;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: 12px;
+    box-sizing: border-box;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.win-thumb {
+    width: 110px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 13px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.win-thumb:hover {
+    outline: 3px solid #1a5fb4;
+}
+
+.win-thumb .icon {
+    width: 28px;
+    height: 28px;
+}
+
 /* Page de texte à sélectionner */
 .text-page {
     width: 620px;
@@ -1336,6 +1473,78 @@ h2 {
 .demo-sb .sb-inner,
 .demo-sb .sb-thumb {
     transition: transform 0.9s ease-in-out, top 0.9s ease-in-out;
+}
+
+/* Petit écran de la démo des fenêtres, placé par son coin haut gauche */
+.demo-win-screen {
+    transform: none;
+    width: 300px;
+    height: 180px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #dfe7f5, #c9d6ee);
+}
+
+.demo-win {
+    position: absolute;
+    box-sizing: border-box;
+    overflow: hidden;
+    background-color: #ffffff;
+    border: 1px solid #c8c8d4;
+    border-radius: 5px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    transition: left 0.9s ease-in-out, top 0.9s ease-in-out, width 0.5s, height 0.5s;
+}
+
+.demo-win.max {
+    border-radius: 0;
+}
+
+.demo-win-title {
+    height: 16px;
+    padding-left: 6px;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: left;
+    background-color: #f3f3f7;
+}
+
+.demo-win-taskbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 15px;
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+.demo-win-preview,
+.demo-win-assist {
+    transform: none;
+    z-index: 5;
+    box-sizing: border-box;
+    transition: width 0.4s;
+}
+
+.demo-win-preview {
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.45);
+}
+
+.demo-win-assist {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+.demo-thumb {
+    padding: 14px 18px;
+    font-size: 12px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .demo-text {

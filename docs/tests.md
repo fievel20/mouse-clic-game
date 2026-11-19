@@ -27,14 +27,14 @@ Attention : les seuils comparés au temps réel, comme le délai maximum entre l
 
 `run()` enchaîne cinq familles de vérifications :
 
-1. **Le chemin au départ** : seul le premier atelier est ouvert, avec « 0 / N » badges.
+1. **Le départ** : tous les ateliers sont ouverts, chacun au niveau 1 seulement, avec « 0 / N » badges, et on peut lancer directement le dernier atelier du chemin.
 2. **Tous les niveaux de tous les ateliers**, dans l'ordre du chemin. Le robot joue chaque niveau sans faute (20 secondes au plus par niveau), puis le test vérifie :
    - 0 erreur ;
    - « niveau suivant débloqué », sauf au dernier niveau ;
    - « nouvel atelier sur le chemin », après le niveau 1 (sauf pour le dernier atelier) ;
    - « nouveau badge », après le dernier niveau ;
    - « tous les badges » (le diplôme), après le tout dernier niveau.
-3. **Le chemin** : à la fin (tous les badges, chemin tout vert), sans bouton central, et avec une progression existante (les ateliers commencés restent ouverts). Le **mode libre** est vérifié aussi : invisible au départ, débloqué à la fin, puis 25 réussites d'affilée dans au moins 5 ateliers différents, sans que la partie se termine.
+3. **Le chemin** : à la fin (tous les badges, chemin tout vert, « Atelier suivant » proposé à la fin de chaque atelier) et sans bouton central. Le **mode libre** est vérifié aussi : invisible au départ, débloqué à la fin, puis 25 réussites d'affilée dans au moins 5 ateliers différents, sans que la partie se termine.
 4. **Les scénarios d'erreur** : un mauvais geste par atelier, pour vérifier qu'il compte une erreur, ou au contraire qu'un geste refusé n'en compte pas.
 5. **Les démonstrations** : chaque scène se joue jusqu'au bout, et « Revoir la démo » relance bien la partie.
 
@@ -45,6 +45,7 @@ La fonction `step()` regarde ce qui est affiché et fait **une** action :
 | À l'écran | Action du robot |
 | --- | --- |
 | Liste avec barre de défilement | Clique la ligne si elle est visible, sinon flèche (niveau 2) ou glisser de l'ascenseur |
+| Écran de l'atelier Fenêtres | Lit la tâche (`data-task`) : double-clic sur la barre de titre, glisser jusqu'au bord ou au coin demandé, puis clic sur la vignette demandée |
 | Bureau de la mission | Lit l'action attendue (`data-action`) et la fait : double-clic, menu du clic droit, glisser, Ctrl + clic, rectangle, défilement, sélection de texte |
 | Explorateur, liste ou bureau de la sélection multiple | Clic puis Ctrl + clic sur les fichiers demandés, ou clic puis Maj + clic, ou rectangle autour des photos |
 | Page de texte | Sélectionne le texte demandé, avec le bon nombre de clics (1, 2 ou 3) |
@@ -75,6 +76,10 @@ Attention aux expressions régulières : `\w` ne reconnaît pas les lettres acce
 | `selectText(p, début, fin, clics)` | Sélectionne du texte dans un paragraphe, puis relâche le bouton avec 1, 2 ou 3 clics |
 | `dragThumbTo(vue, position)` | Fait glisser l'ascenseur jusqu'à une position de défilement |
 | `center(el)` | Centre d'un élément à l'écran |
+
+## Faire tourner les tests dans une vraie fenêtre
+
+Les gestes qui visent un point précis de l'écran (labyrinthe, bords et coins de l'atelier Fenêtres, rectangle de sélection) ont besoin d'une page **affichée**, avec une vraie taille. Dans un onglet caché ou réduit, la page mesure 0 × 0 pixel, et ces tests échouent sans que le jeu soit en cause. Gardez l'onglet visible pendant les tests, idéalement en 1024 × 768 ou plus.
 
 ## Limites
 

@@ -261,6 +261,61 @@ window.MouseDemo = (() => {
             await caption('Et un clic dans la piste, au-dessus ou en dessous de l’ascenseur, saute d’une page.', 3000);
         },
 
+        async fenetres() {
+            setMouse('double');
+            // Un petit écran (300 × 180, barre des tâches comprise), placé par son coin haut gauche
+            const sx = 20;
+            const sy = 15;
+            const screenEl = put(`<div class="demo-win" data-name="Documents"><div class="demo-win-title">Documents</div></div>
+                <div class="demo-win other" data-name="Photos"><div class="demo-win-title">Photos</div></div>
+                <div class="demo-win-taskbar"></div>`, sx, sy, 'demo-win-screen');
+            const [win, other] = screenEl.querySelectorAll('.demo-win');
+            const place = (el, x, y, w, h) => Object.assign(el.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });
+            place(other, 150, 60, 120, 80);
+            place(win, 60, 30, 140, 90);
+            await caption('Une fenêtre s’attrape par sa barre de titre : la bande du haut, avec son nom.', 2800);
+            captionElement.textContent = 'Un double-clic sur la barre de titre : la fenêtre passe en plein écran.';
+            await moveTo(sx + 110, sy + 38);
+            await press('left');
+            await wait(120);
+            await press('left');
+            place(win, 0, 0, 300, 165);
+            win.classList.add('max');
+            await wait(1800);
+            captionElement.textContent = 'Un autre double-clic : elle reprend sa taille d’origine.';
+            await moveTo(sx + 150, sy + 8);
+            await press('left');
+            await wait(120);
+            await press('left');
+            place(win, 60, 30, 140, 90);
+            win.classList.remove('max');
+            await wait(1800);
+            setMouse('drag');
+            captionElement.textContent = 'Glissée contre le bord gauche, elle prend la moitié de l’écran…';
+            await moveTo(sx + 110, sy + 38);
+            await press('left', true);
+            const preview = put('', sx, sy, 'demo-win-preview');
+            place(preview, sx, sy, 0, 165);
+            place(win, 2, 60, 140, 90);
+            await moveTo(sx + 2, sy + 68);
+            place(preview, sx, sy, 150, 165);
+            await wait(600);
+            release('left');
+            preview.remove();
+            place(win, 0, 0, 150, 165);
+            const assistEl = put('<div class="demo-thumb">Photos</div>', sx + 150, sy, 'demo-win-assist');
+            place(assistEl, sx + 150, sy, 150, 165);
+            await caption('…et les autres fenêtres sont proposées pour l’autre moitié : on clique sur celle qu’on veut.', 3000);
+            setMouse('left');
+            await moveToEl(assistEl);
+            await press('left');
+            assistEl.remove();
+            place(other, 150, 0, 150, 165);
+            await wait(1500);
+            await caption('Glissée dans un coin, une fenêtre prend un quart de l’écran.', 2600);
+            place(win, 0, 0, 150, 82);
+        },
+
         async glisser() {
             setMouse('drag');
             const target = file(80, 95);

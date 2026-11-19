@@ -28,6 +28,7 @@ js/tests.js             Tests automatiques, chargés seulement avec index.html?t
 | Molette | `molette` | `molette.js` | 40 |
 | Barre de défilement | `barre` | `barre.js` | 45 |
 | Glisser-déposer | `glisser` | `glisser.js` | 50 |
+| Fenêtres | `fenetres` | `fenetres.js` | 55 |
 | Sélection de texte | `selection` | `selection.js` | 60 |
 | Sélection multiple | `multiple` | `multiple.js` | 70 |
 | Grand défi | `melange` | `clics.js` | 90 |
@@ -119,11 +120,11 @@ Chaque atelier a 3 niveaux. Le niveau *n* s'ouvre avec au moins **★★** au ni
 
 ### Chemin
 
-Le menu présente les ateliers dans l'ordre de `order`, 6 par ligne (constante `PER_ROW` de `renderMenu`), une ligne sur deux de droite à gauche.
+Le menu présente les ateliers dans l'ordre de `order`, 7 par ligne (constante `PER_ROW` de `renderMenu`), une ligne sur deux de droite à gauche.
 
-- Un atelier est **franchi** avec ★★ à son niveau 1. Le bouton central compte aussi comme franchi si le joueur a indiqué ne pas en avoir (`noMiddle`).
-- Un atelier est **ouvert** si tous les ateliers précédents sont franchis, **ou** s'il a déjà été commencé (au moins une étoile à un niveau). La seconde règle évite de bloquer la progression existante quand un nouvel atelier est inséré dans le chemin.
-- **« Vous êtes ici »** désigne le premier atelier ouvert pas encore franchi, sinon le premier atelier sans badge.
+- **Il n'y a pas de progression imposée entre les ateliers** : tous sont ouverts dès le départ, et le numéro d'étape n'est qu'un ordre conseillé. Dans un atelier, on commence toujours par le niveau 1 (voir « Niveaux »).
+- Un atelier est **franchi** avec ★★ à son niveau 1. Le bouton central compte aussi comme franchi si le joueur a indiqué ne pas en avoir (`noMiddle`). Cela ne débloque rien : les liaisons du chemin passent seulement au vert.
+- En fin de partie, quand il n'y a pas de niveau suivant à proposer, le bouton « Atelier suivant » propose l'atelier suivant du chemin.
 
 ### Badges
 
