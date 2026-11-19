@@ -56,7 +56,7 @@ La **souris dessinée** (`mouseSvg`) est l'élément clé du jeu : la partie à 
 
 Le jeu vise un écran de **1024 × 768** au minimum :
 
-- **Menu :** le chemin fait 970 px de large (7 cartes de 130 px et 6 liaisons de 10 px) et doit tenir en hauteur, sans barre de défilement. Avec 2 lignes, il tient dans 768 px de haut : il y a la place pour 14 ateliers, dont 13 sont pris. Au-delà, il faudra revoir la mise en page (par exemple, des cartes plus basses).
-- **Badges :** les médailles font 32 px, pour que les 13 médailles, le diplôme et le bouton du mode libre tiennent sur une ligne.
+- **Menu :** le chemin fait 970 px de large (8 cartes de 116 px et 7 liaisons de 6 px) et doit tenir en hauteur, sans barre de défilement. Avec 2 lignes, il tient dans 768 px de haut : il y a la place pour 16 ateliers, et **les 16 places sont prises**. Les cartes ne peuvent guère devenir plus étroites : un 17e atelier demandera de revoir la mise en page (par exemple, des cartes plus basses sur 3 lignes, ou des onglets par thème).
+- **Badges :** les médailles font 28 px, pour que les 16 médailles, le diplôme et le bouton du mode libre tiennent sur une ligne.
 - **Plateaux de jeu :** 650 px de large au plus, sauf la mission finale (846 px : la liste de tâches et le bureau côte à côte).
 - La page n'est pas prévue pour les téléphones : le jeu sert justement à apprendre la souris.

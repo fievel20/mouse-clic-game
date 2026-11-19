@@ -14,6 +14,7 @@ index.html              Structure de la page (menu, écran de jeu, fenêtres)
 style.css               Toute la mise en forme
 js/core.js              Noyau : menu, chemin, niveaux, partie, score, étoiles, sauvegarde
 js/demo.js              Démonstrations animées (une scène par atelier)
+js/fenetres-ecran.js    Petit écran façon Windows 11, partagé par les ateliers de fenêtres
 js/ateliers/*.js        Un fichier par atelier
 js/tests.js             Tests automatiques, chargés seulement avec index.html?test
 ```
@@ -28,7 +29,10 @@ js/tests.js             Tests automatiques, chargés seulement avec index.html?t
 | Molette | `molette` | `molette.js` | 40 |
 | Barre de défilement | `barre` | `barre.js` | 45 |
 | Glisser-déposer | `glisser` | `glisser.js` | 50 |
+| Boutons de fenêtre | `boutons-fenetre` | `boutons-fenetre.js` | 52 |
+| Barre des tâches | `barre-taches` | `boutons-fenetre.js` | 53 |
 | Fenêtres | `fenetres` | `fenetres.js` | 55 |
+| Défi fenêtres | `defi-fenetres` | `fenetres.js` | 57 |
 | Sélection de texte | `selection` | `selection.js` | 60 |
 | Sélection multiple | `multiple` | `multiple.js` | 70 |
 | Grand défi | `melange` | `clics.js` | 90 |
@@ -42,6 +46,7 @@ js/tests.js             Tests automatiques, chargés seulement avec index.html?t
 
 1. `js/core.js` crée `window.MouseGame`.
 2. `js/demo.js` crée `window.MouseDemo`. Il utilise `MouseGame.mouseSvg`, `MouseGame.ICONS` et `MouseGame.speed`.
+   `js/fenetres-ecran.js` crée `window.WindowsScreen`, utilisé par les ateliers de fenêtres : il doit être chargé avant eux.
 3. `js/ateliers/*.js` appellent `MouseGame.register(...)`. L'ordre des balises n'a pas d'importance : le noyau trie les ateliers par `order`.
 4. Un script en ligne appelle `MouseGame.start()`, qui affiche le menu. Avec `?test`, il ajoute aussi `js/tests.js`.
 
@@ -120,7 +125,7 @@ Chaque atelier a 3 niveaux. Le niveau *n* s'ouvre avec au moins **★★** au ni
 
 ### Chemin
 
-Le menu présente les ateliers dans l'ordre de `order`, 7 par ligne (constante `PER_ROW` de `renderMenu`), une ligne sur deux de droite à gauche.
+Le menu présente les ateliers dans l'ordre de `order`, 8 par ligne (constante `PER_ROW` de `renderMenu`), une ligne sur deux de droite à gauche.
 
 - **Il n'y a pas de progression imposée entre les ateliers** : tous sont ouverts dès le départ, et le numéro d'étape n'est qu'un ordre conseillé. Dans un atelier, on commence toujours par le niveau 1 (voir « Niveaux »).
 - Un atelier est **franchi** avec ★★ à son niveau 1. Le bouton central compte aussi comme franchi si le joueur a indiqué ne pas en avoir (`noMiddle`). Cela ne débloque rien : les liaisons du chemin passent seulement au vert.

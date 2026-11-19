@@ -15,7 +15,10 @@ Même charte graphique que [OCN-mouse-campus](https://github.com/le-campus-numer
 | Molette | Déplacer le fichier cran par cran | Faire défiler une liste pour trouver le dossier | Trouver un fichier par son nom dans une longue liste |
 | Barre de défilement | Faire glisser l'ascenseur pour trouver le dossier | Les flèches ▲ ▼, ligne par ligne | Ascenseur, flèches et piste pour trouver un fichier par son nom |
 | Glisser-déposer | Ranger le fichier dans le dossier | Trier dans trois dossiers | Le labyrinthe de OCN-mouse-campus |
+| Boutons de fenêtre | Cliquer sur le bouton nommé : Réduire (─), Agrandir (▢) / Rétrécir (❐), Fermer (✕) | Choisir le bon bouton d'après le but (« faites disparaître… sans la fermer ») | Plusieurs fenêtres : la bonne fenêtre et le bon bouton |
+| Barre des tâches | Réduire une fenêtre, puis la rouvrir avec son icône | Retrouver une fenêtre réduite ou cachée derrière une autre | Réduire et rouvrir en cliquant sur les icônes |
 | Fenêtres (comme Windows 11) | Double-clic sur la barre de titre : plein écran, puis taille d'origine | Glisser contre un bord : la moitié de l'écran, puis choisir l'autre fenêtre proposée | Glisser dans un coin : un quart de l'écran |
+| Défi fenêtres | Boutons et barre des tâches mélangés | Avec les moitiés d'écran | Tout mélangé, avec 4 fenêtres |
 | Sélection de texte | Sélectionner un mot en cliquant-glissant | Sélectionner un groupe de mots | Les raccourcis : double-clic (un mot) et triple-clic (un paragraphe) |
 | Sélection multiple | Ctrl + clic pour ajouter des fichiers un par un | Maj + clic pour sélectionner toute une plage | Tracer un rectangle de sélection autour d'un groupe |
 | Grand défi | Clics gauche, droit et central mélangés | Cases plus petites, icônes leurres | Contre la montre |
@@ -23,9 +26,9 @@ Même charte graphique que [OCN-mouse-campus](https://github.com/le-campus-numer
 
 ## Le chemin et les badges
 
-Le menu présente les ateliers sous la forme d'un **chemin**, dans l'ordre conseillé : survol, clic gauche, clic droit, double-clic, bouton central, molette, barre de défilement, glisser-déposer, fenêtres, sélection de texte, sélection multiple, Grand défi, puis la mission finale « Ranger le bureau ». C'est seulement une suggestion : **tous les ateliers sont ouverts dès le départ**, et on peut commencer par celui qu'on veut. Dans chaque atelier, on commence toujours par le **niveau 1**. Les niveaux 2 et 3 se débloquent avec ★★ au niveau précédent. Les liaisons du chemin passent au vert quand un atelier a ★★ au niveau 1.
+Le menu présente les ateliers sous la forme d'un **chemin**, dans l'ordre conseillé : survol, clic gauche, clic droit, double-clic, bouton central, molette, barre de défilement, glisser-déposer, boutons de fenêtre, barre des tâches, fenêtres, défi fenêtres, sélection de texte, sélection multiple, Grand défi, puis la mission finale « Ranger le bureau ». C'est seulement une suggestion : **tous les ateliers sont ouverts dès le départ**, et on peut commencer par celui qu'on veut. Dans chaque atelier, on commence toujours par le **niveau 1**. Les niveaux 2 et 3 se débloquent avec ★★ au niveau précédent. Les liaisons du chemin passent au vert quand un atelier a ★★ au niveau 1.
 
-Réussir le **niveau 3** d'un atelier avec ★★ rapporte son **badge** 🏅. Avec les 13 badges, on obtient le diplôme « Bravo, vous maîtrisez la souris ! ». Sans bouton central, cet atelier est considéré comme franchi et son badge n'est pas demandé.
+Réussir le **niveau 3** d'un atelier avec ★★ rapporte son **badge** 🏅. Avec les 16 badges, on obtient le diplôme « Bravo, vous maîtrisez la souris ! ». Sans bouton central, cet atelier est considéré comme franchi et son badge n'est pas demandé.
 
 ## Le mode libre
 
@@ -58,6 +61,7 @@ Ouvrez `index.html?test` : un robot joue chaque niveau de chaque atelier en acc�
 - `js/core.js` : menu, niveaux, déroulement d'une partie, score, étoiles, dessin de la souris.
 - `js/ateliers/*.js` : un fichier par atelier, qui s'enregistre avec `MouseGame.register({ id, order, title, text, hint, badge, levels, start })`. `order` fixe sa place sur le chemin. Chaque niveau est un objet de réglages (`{ name, rounds, ... }`) passé à `start(api, level)`.
 - `js/demo.js` : les démonstrations animées, une scène par atelier (clé = `id` de l'atelier).
+- `js/fenetres-ecran.js` : le petit écran façon Windows 11 (fenêtres, boutons, barre des tâches, ancrage), partagé par les 4 ateliers de fenêtres.
 - `js/tests.js` : les tests automatiques.
 
 Pour ajouter un atelier : créer son fichier dans `js/ateliers/`, l'ajouter dans `index.html`, écrire sa scène dans `js/demo.js`, puis apprendre au robot de `js/tests.js` à y jouer. Les scripts sont classiques, sans modules, pour que `index.html` s'ouvre aussi sans serveur.

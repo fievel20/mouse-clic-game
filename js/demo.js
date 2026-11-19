@@ -100,6 +100,29 @@ window.MouseDemo = (() => {
         return put(MouseGame.ICONS.folder + (label ? `<span>${label}</span>` : ''), x, y, 'demo-icon');
     }
 
+    // Petit écran Windows pour les démos de fenêtres (300 × 180, placé en (20, 15) dans la scène).
+    // wins : [{ name, x, y, w, h }] ; renvoie l'écran, les fenêtres, les icônes de la barre des tâches
+    // et des outils pour placer une fenêtre et viser un de ses éléments.
+    function windowsScreen(wins) {
+        const sx = 20;
+        const sy = 15;
+        const icons = { Documents: 'folder', Photos: 'image', Musique: 'music' };
+        const el = put(wins.map((w) => `<div class="demo-win" data-name="${w.name}"><div class="demo-win-title">${w.name}
+            <span class="demo-win-btns"><span class="b-min">─</span><span class="b-max">▢</span><span class="b-close">✕</span></span></div></div>`).join('')
+            + `<div class="demo-win-taskbar">${wins.map((w) => `<span class="demo-task" data-name="${w.name}">${MouseGame.ICONS[icons[w.name]]}</span>`).join('')}</div>`,
+        sx, sy, 'demo-win-screen');
+        const byName = (name) => el.querySelector(`.demo-win[data-name="${name}"]`);
+        const place = (win, x, y, w, h) => Object.assign(win.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });
+        wins.forEach((w) => place(byName(w.name), w.x, w.y, w.w, w.h));
+        // Centre d'un élément, en coordonnées de la scène
+        const at = (target) => {
+            const s = scene.getBoundingClientRect();
+            const r = target.getBoundingClientRect();
+            return [r.left - s.left + r.width / 2, r.top - s.top + r.height / 2];
+        };
+        return { el, sx, sy, byName, place, at, task: (name) => el.querySelector(`.demo-task[data-name="${name}"]`) };
+    }
+
     // ---------- Scènes ----------
 
     const SCENES = {
@@ -259,6 +282,103 @@ window.MouseDemo = (() => {
                 await wait(700);
             }
             await caption('Et un clic dans la piste, au-dessus ou en dessous de l’ascenseur, saute d’une page.', 3000);
+        },
+
+        async 'boutons-fenetre'() {
+            setMouse('left');
+            const s = windowsScreen([{ name: 'Documents', x: 50, y: 30, w: 190, h: 100 }]);
+            const win = s.byName('Documents');
+            const button = (cls) => win.querySelector(cls);
+            await caption('En haut à droite de chaque fenêtre, il y a trois boutons.', 2600);
+            captionElement.textContent = '▢ « Agrandir » : la fenêtre passe en plein écran…';
+            await moveTo(...s.at(button('.b-max')));
+            await press('left');
+            s.place(win, 0, 0, 300, 165);
+            win.classList.add('max');
+            button('.b-max').textContent = '❐';
+            await wait(1600);
+            captionElement.textContent = '…et le bouton devient ❐ « Rétrécir » : il lui rend sa taille d’origine.';
+            await moveTo(...s.at(button('.b-max')));
+            await wait(900);
+            await press('left');
+            s.place(win, 50, 30, 190, 100);
+            win.classList.remove('max');
+            button('.b-max').textContent = '▢';
+            await wait(1600);
+            captionElement.textContent = '─ « Réduire » : la fenêtre disparaît dans la barre des tâches, en bas, sans être fermée.';
+            await moveTo(...s.at(button('.b-min')));
+            await press('left');
+            win.classList.add('min');
+            await wait(2200);
+            win.classList.remove('min');
+            await wait(600);
+            captionElement.textContent = '✕ « Fermer » : la fenêtre se ferme. Il devient rouge quand la flèche est dessus.';
+            await moveTo(...s.at(button('.b-close')));
+            button('.b-close').classList.add('hover');
+            await wait(900);
+            await press('left');
+            win.remove();
+            s.task('Documents').remove();
+            await wait(1800);
+        },
+
+        async 'barre-taches'() {
+            setMouse('left');
+            const s = windowsScreen([
+                { name: 'Documents', x: 30, y: 20, w: 170, h: 100 },
+                { name: 'Photos', x: 110, y: 50, w: 170, h: 100 }
+            ]);
+            const docs = s.byName('Documents');
+            const photos = s.byName('Photos');
+            await caption('En bas, la barre des tâches montre une icône par fenêtre ouverte.', 2800);
+            captionElement.textContent = 'On réduit « Photos » avec son bouton ─ : elle disparaît…';
+            await moveTo(...s.at(photos.querySelector('.b-min')));
+            await press('left');
+            photos.classList.add('min');
+            await wait(1800);
+            captionElement.textContent = '…et un clic sur son icône dans la barre des tâches la fait revenir.';
+            await moveTo(...s.at(s.task('Photos')));
+            await press('left');
+            photos.classList.remove('min');
+            await wait(1800);
+            captionElement.textContent = 'Si une fenêtre est cachée derrière une autre, un clic sur son icône la met devant.';
+            await moveTo(...s.at(s.task('Documents')));
+            await press('left');
+            docs.style.zIndex = 3;
+            await wait(1800);
+            await caption('Un clic sur l’icône de la fenêtre déjà devant la réduit.', 2400);
+        },
+
+        async 'defi-fenetres'() {
+            setMouse('all');
+            const s = windowsScreen([
+                { name: 'Documents', x: 30, y: 20, w: 160, h: 95 },
+                { name: 'Photos', x: 120, y: 55, w: 160, h: 95 }
+            ]);
+            const docs = s.byName('Documents');
+            const photos = s.byName('Photos');
+            await caption('Le défi : les boutons, la barre des tâches et le glisser-déposer, tout mélangé.', 3000);
+            setMouse('left');
+            captionElement.textContent = 'Une consigne peut demander un bouton…';
+            await moveTo(...s.at(photos.querySelector('.b-min')));
+            await press('left');
+            photos.classList.add('min');
+            await wait(1400);
+            captionElement.textContent = '…la barre des tâches…';
+            await moveTo(...s.at(s.task('Photos')));
+            await press('left');
+            photos.classList.remove('min');
+            await wait(1400);
+            setMouse('drag');
+            captionElement.textContent = '…ou un glisser-déposer, comme contre un bord de l’écran.';
+            await moveTo(...s.at(docs.querySelector('.demo-win-title')));
+            await press('left', true);
+            s.place(docs, 2, 40, 160, 95);
+            await moveTo(s.sx + 2, s.sy + 50);
+            release('left');
+            s.place(docs, 0, 0, 150, 165);
+            docs.style.zIndex = 3;
+            await caption('Lisez bien chaque consigne : chaque geste compte !', 2600);
         },
 
         async fenetres() {

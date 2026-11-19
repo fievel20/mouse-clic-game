@@ -282,9 +282,9 @@ window.MouseGame = (() => {
         return card;
     }
 
-    // Le chemin serpente : 7 étapes par ligne, une ligne sur deux de droite à gauche
+    // Le chemin serpente : 8 étapes par ligne, une ligne sur deux de droite à gauche
     function renderMenu() {
-        const PER_ROW = 7;
+        const PER_ROW = 8;
         renderBadges();
         cards.innerHTML = '';
         for (let start = 0; start < activities.length; start += PER_ROW) {
